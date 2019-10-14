@@ -117,7 +117,7 @@ vec3 sharptex(sampler2D s, vec2 tc){
 void main(){
   #ifdef BLOOM
   vec3 bloom = kawazePass(colortex1,tc/bloomscale,6.,resolution);
-  gl_FragColor.rgb = 2.*(sharptex(colortex0,tc).rgb+BLOOM_strength*bloom);
+  gl_FragColor.rgb = 2.*(sharptex(colortex2,tc).rgb+BLOOM_strength*bloom);
   #else
   gl_FragColor.rgb = 2.*(sharptex(colortex0,tc).rgb);
   #endif
