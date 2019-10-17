@@ -287,7 +287,7 @@ float stlen = length(st);
       shade=mix(fogColor,lc,rayl*l);
       float ext= exp2(-den);
       c=mix(shade,c,ext);
-      rba +=rb*(.1+.1*wetness)*rayl*rayl*(1.-ext);
+      rba +=rb*(.1+.1*wetness)*l*rayl*rayl*(1.-ext);
       p-=st;
   }
   return c+rba;
