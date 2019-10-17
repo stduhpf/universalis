@@ -99,11 +99,13 @@ float c= fbm2(.02*p*vec3(.1,.15,.2))*smoothstep(cloud_min_plane,cloud_low,p.y)*s
 float shad(vec3 ro,vec3 rd,float d){
 	const float dist = 80.;
     vec3 p = ro+dist*rd*d/shit;
-    float a =0.;
-    for(int i = 0;i++<int(shit)+1&&a<shit*.8;p+=rd*dist/shit)
-        a+=max(cloods2(p),0.);
+    float a =1.;
+    for(int i = 0;i++<int(shit)+1&&a<shit*.8;p+=rd*dist/shit){
+      float v = max(cloods2(p),0.);
+      a=a*exp2(-v/shit*100.);
+    }
 
-	return (a/shit);
+	return a;
 }
 #include "lib/ambcol.glsl"
 
@@ -126,9 +128,9 @@ vec4 trace(vec3 ro,vec3 rd,vec2 I,vec3 ld,vec3 col,float dpt){
     for(int i = 0;i++<int(it)+1&&a<it*.8;p+=rd*h2/it){
         float v =max(cloods(p),0.);
         a+=v;
-        col = mix(col,mix(ambcol,lightCol,exp2(-shad(p,ld,1.-d)*10.)),clamp(v,0.,1.));
+        col = mix(col,mix(ambcol,lightCol,shad(p,ld,1.-d)),1.-exp2(-max(v/it,0.)*1000.));
     }
-    col*=(1.-.9*rainStrength);
+    col*=(1.-.9*rainStrength)*.5;
     float scatter = exp2(-distance(p,ro)*.000015);
     col = mix( getSky3(rd),col,scatter);
 	return vec4(col,mix(1.,exp2(-a/it*15.),scatter*scatter));
