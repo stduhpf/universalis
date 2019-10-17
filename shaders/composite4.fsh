@@ -262,8 +262,9 @@ vec3 volumeLight(vec3 c,vec3 rd){
   vec3 st = rd/float(VOL_STEPS);
   vec3 p = rd;
   vec3 shade =vec3(0.);
-  float dither = hash13(vec3(gl_FragCoord.xy,mod(frameCounter,TAU)*50.));
-  p-=st*fract(dither);
+  vec3 hc = vec3(gl_FragCoord.xy,mod(frameCounter*3.,PI)*50.);
+  float dit = hash13(hc-hc.zxy);
+  p-=st*fract(dit);
 
   vec3 fogColor = vec3(.058,.063,.08)*(1.+length(lightcol));
 float rayl = .7+.3*saturate(mix(dot(normalize(rd),lightDir),1.,.3));
