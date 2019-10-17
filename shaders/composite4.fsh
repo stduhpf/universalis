@@ -271,9 +271,10 @@ rayl*=rayl;
 float wetd = wetness*wetness;
 wetd = wetd*wetd;
 vec3 li = lightcol*lightcol;
-vec3 lc = mix(lightcol,vec3(li.r,0,0),smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.1)));
+vec3 lc = mix(lightcol-lightcol,vec3(li.r,0,0),smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.1)));
 lc = mix(lc,vec3(0,li.g,0),smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.125)));
 lc = mix(lc,vec3(0,0,li.b),smoothstep(.04,.0,abs(dot(normalize(rd),lightDir)+.15)));
+li+=lightcol;
 lc = mix(lightcol,lc,.2+.1*wetness);
 
 float stlen = length(st);
