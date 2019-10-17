@@ -271,24 +271,25 @@ rayl*=rayl;
 float wetd = wetness*wetness;
 wetd = wetd*wetd;
 vec3 li = lightcol*lightcol;
-vec3 lc = mix(lightcol-lightcol,vec3(li.r,0,0),smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.1)));
-lc = mix(lc,vec3(0,li.g,0),smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.125)));
-lc = mix(lc,vec3(0,0,li.b),smoothstep(.04,.0,abs(dot(normalize(rd),lightDir)+.15)));
-li+=lightcol;
-lc = mix(lightcol,lc,.2+.1*wetness);
-
+vec3 rb = vec3(li.r,0,0)*smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.1));
+rb = mix(rb,vec3(0,li.g,0),smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.125)));
+rb = mix(rb,vec3(0,0,li.b),smoothstep(.04,.0,abs(dot(normalize(rd),lightDir)+.15)));
+vec3 lc =lightcol;
+vec3 rba = vec3(0);
 float stlen = length(st);
 
   for(int i=0;i<VOL_STEPS;i++){
     vec4 n = texture2D(noisetex,(p.xz+cameraPosition.xz- frameTimeCounter)*.0001);
     float density=(.05*n.r*n.r+.05*wetd)*exp2(-abs(p.y+cameraPosition.y-62.)*(.1+.3*sqrt(n.g)*(1.-.9*wetness)));
     float den = density*stlen;
-
-      shade=mix(fogColor,lc,rayl*shadow2(p)*getCloudShadow(p));
-      c=mix(shade,c,exp2(-den));
+    float l = shadow2(p)*getCloudShadow(p);
+      shade=mix(fogColor,lc,rayl*l);
+      float ext= exp2(-den);
+      c=mix(shade,c,ext);
+      rba +=rb*(.1+.1*wetness)*rayl*rayl*(1.-ext);
       p-=st;
   }
-  return c;
+  return c+rba;
 }
 #endif
 
