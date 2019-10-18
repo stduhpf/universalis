@@ -1,4 +1,4 @@
-#version 400
+#version 400 compatibility
 
 varying vec2 tc;
 varying float avgexp;
@@ -14,7 +14,7 @@ const bool colortex0MipmapEnabled = true;
 //#define AUTO_EXPOSURE
 
 void main(){
-  gl_Position = ftransform();
+  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
   tc = gl_MultiTexCoord0.xy;
   #ifdef AUTO_EXPOSURE
   vec3 lumaWeights = vec3(.3,.59,.11);
