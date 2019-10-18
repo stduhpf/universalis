@@ -71,6 +71,16 @@ vec3 lightDir,lightcol;
 
 #define USE_METALS
 
+float getCloudShadow(vec3 p)
+{
+  if(p.y>cloud_mid)
+    return 1.;
+  vec3 slp = normalize(view2cam(shadowLightPosition));
+  p-=slp*p.y/slp.y;
+  vec2 pc = ((p.xz+.5*resolution)/resolution);
+  return pc==fract(pc)?saturate(texture2D(colortex1,pc*.5+vec2(.5,0)).r):1.;
+}
+
 float brdflight(vec3 n, vec3 v, vec3 l,float r){
 
   r+=.0025;
@@ -163,7 +173,7 @@ vec3 ssr(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough, float fresnel,fl
           //ret = vec3(depth-sc.z);
           if(sc.z-depth<abs(stepl*stepl*.001)&&depth<1.){
             vec3 n = texture2D(shadowcolor1,sc.xy).rgb*2.-1.;
-            vec3 l = lc*max(0.,n.z);
+            vec3 l = lc*max(0.,n.z)*getCloudShadow(p);
             ret = l*texture2D(shadowcolor0,sc.xy).rgb*.5;
           break;
         }
@@ -223,15 +233,7 @@ vec3 ssrs(vec3 p, vec3 rd, float rough,float sh, float fresnel){
   return c/float(SSR_FILTER);
 }
 
-float getCloudShadow(vec3 p)
-{
-  if(p.y>cloud_mid)
-    return 1.;
-  vec3 slp = normalize(view2cam(shadowLightPosition));
-  p-=slp*p.y/slp.y;
-  vec2 pc = ((p.xz+.5*resolution)/resolution);
-  return pc==fract(pc)?saturate(texture2D(colortex1,pc*.5+vec2(.5,0)).r):1.;
-}
+
 
 
 #define WATER_VOL_STEPS 4 //[2 4 8 16 32]
