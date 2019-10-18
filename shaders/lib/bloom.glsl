@@ -47,7 +47,7 @@ vec4 filterCloud(sampler2D s,vec2 tc,float i,vec2 res, sampler2D d){
   vec2 ii = (i+.5)/res;
   const float treshhold = 1.;
   float a =0.;
-  vec4 c = vec4(0,1,0,0);
+  vec4 c = vec4(1,0,0,0);
   vec2 fc = fract(tc*2.);
   if(min(min(fc.x,fc.y),1.-max(fc.x,fc.y))<.001*i)
     return c;

@@ -91,50 +91,52 @@ float cloods( vec3 p){
 float cloods2( vec3 p){
 float c= fbm2(.02*p*vec3(.1,.15,.2))*smoothstep(cloud_min_plane,cloud_low,p.y)*smoothstep(cloud_top_plane,cloud_high,p.y)
     *smoothstep(-0.4,0.3,vnoise(0.0005*p.xz));
-    return smoothstep(.1,.3,c+.7*rainStrength);
+    return smoothstep(.0,.5,c+.45*rainStrength);
 }
-#define it 8.
-#define shit 2.
+#define it 16.
+#define shit 4.
+#define den (.05+.08*rainStrength)
 
 float shad(vec3 ro,vec3 rd,float d){
 	const float dist = 80.;
     vec3 p = ro+dist*rd*d/shit;
     float a =1.;
-    for(int i = 0;i++<int(shit)+1&&a<shit*.8;p+=rd*dist/shit){
-      float v = max(cloods2(p),0.);
-      a=a*exp2(-v/shit*100.);
+    float sts = dist/shit;
+    for(int i = 0;i++<int(shit)+1;p+=rd*sts){
+        a*=exp2(-abs(sts)*max(cloods2(p),0.)*den);
     }
 
-	return a;
+	return (a/shit);
 }
 #include "lib/ambcol.glsl"
 
-vec4 trace(vec3 ro,vec3 rd,vec2 I,vec3 ld,vec3 col,float dpt){
-    #include "lib/lightcol.glsl"
-    vec3 ambcol = ambientCol*ambi*.15;
-      float h = (cloud_min_plane-ro.y)/(rd.y);
-      float h2 = (cloud_top_plane-ro.y)/(rd.y);
-    if((h<0.&&h2<0.)||(h>dpt&&h2>dpt))
-    	return vec4(col,0.);
-    float t= h;
-    h=max(h,h2),
-    h=min(h,dpt),
-    h2 = minp(t,h2);
-    if(h2==0.)h=min(h,240.);
-    float d = fract(bayer16(I*resolution)+120.1*frameTimeCounter);
-    vec3 p = ro+(h-d*(h2-=h)/it)*rd;
-    float a =0.;
 
-    for(int i = 0;i++<int(it)+1&&a<it*.8;p+=rd*h2/it){
+vec3 trace(vec3 ro,vec3 rd,vec2 I,vec3 ld,float dpt){
+
+    float h = (cloud_min_plane-ro.y)/(rd.y);
+    float h2 = (cloud_top_plane-ro.y)/(rd.y);
+  if((h<0.&&h2<0.)||(h>dpt&&h2>dpt))
+    return vec3(1.);
+  float t= h;
+  h=max(h,h2),
+  h=min(h,dpt),
+  h2 = minp(t,h2);
+  if(h2==0.)h=min(h,240.);
+  float d = fract(bayer16(I*resolution)+120.1*frameTimeCounter);
+
+  float extinct = 1.;
+  float lightness = 0.;
+  vec3 p = ro+(h-d*(h2-=h)/it)*rd;
+    float sts = h2/it;
+    for(int i = 0;i++<int(it)+1;p+=rd*sts){
         float v =max(cloods(p),0.);
-        a+=v;
-        col = mix(col,mix(ambcol,lightCol,shad(p,ld,1.-d)),1.-exp2(-max(v/it,0.)*1000.));
+        float vp = exp2(-abs(sts)*den*v);
+        extinct*=(vp);
+        lightness = mix(shad(p,ld,d),lightness,vp);
     }
-    col*=(1.-.9*rainStrength)*.5;
-    float scatter = exp2(-distance(p,ro)*.000015);
-    col = mix( getSky3(rd),col,scatter);
-	return vec4(col,mix(1.,exp2(-a/it*15.),scatter*scatter));
+	return vec3(1.-(1.-extinct)*exp2(-h*.0001),lightness,extinct);
 }
+
 #define sit 6.
 float cloudsh(vec3 ro,vec3 rd,vec2 I){
   float h = (cloud_min_plane-ro.y)/(rd.y);
@@ -179,6 +181,7 @@ vec3 cosineDirection( in vec3 nor,float r, vec2 fc)
 
 /*DRAWBUFFERS:1*/
 void main(){
+
   vec4 base = vec4(ambi*ambientCol,1.-.99*rainStrength);
   vec2 ntc =tc*2.;
   vec3 ld = camdir(normalize(shadowLightPosition));
@@ -192,8 +195,9 @@ void main(){
 
       if(floor(ntc)==vec2(1)){
       //rd = normalize(screen2cam(vec3(ntc,1.)));
-          vec4 cl = trace(cameraPosition,rd,tc,ld,c,pixdpth<1.?depthBlock(pixdpth):1e12);
-          c = mix(cl.rgb*.5,c,sqrt(cl.a));
+
+          vec3 cl = trace(cameraPosition,rd,tc,ld,pixdpth<1.?depthBlock(pixdpth):1e12);
+          c =cl;
             //gl_FragData[0]=vec4(saturate3(cl.rgb*.5),cl.a);
       }else{
         if(pixdpth<1.){
@@ -213,10 +217,10 @@ void main(){
 
           if(fresnel>.001)
           {
-            vec4 cl =base;
+            //vec4 cl =base;
             vec3 n = cosineDirection(n,roughness*roughness,gl_FragCoord.xy);
-            cl= roughness<.3?mix(trace(p,reflect(rd,n),tc,ld,c,1e12),cl,smoothstep(.2,.3,roughness)):cl;
-                c = mix(cl.rgb,c,sqrt(cl.a));
+            vec3 cl=trace(p,reflect(rd,n),tc,ld,1e12);
+                c = cl;
           }
         }
         //gl_FragData[0]=vec4(saturate3(c),1.);

@@ -6,7 +6,9 @@
 
 #include "lib/clouds.set"
 
-float dither;
+
+
+float dither,dit;
 
 varying vec2 tc;
 uniform sampler2D colortex7;
@@ -36,6 +38,11 @@ uniform vec3 skyColor;
 
 
 uniform int worldTime;
+
+
+#include "lib/ambcol.glsl"
+#include "lib/lmcol.glsl"
+
 vec3 lc=vec3(0.);
 
 #define SSR
@@ -86,19 +93,14 @@ vec3 ssr(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough, float fresnel,fl
   vec3 sky = .5*(getSky2(camdir(rd))+dither*0.01);
 
   vec3 cl = texture2D(colortex1,tc*.5).rgb;
-  float maxrb = max( cl.r, cl.b );
-  float k = saturate( (cl.g-maxrb)*2.0);
-  float dg = cl.g;
-  cl.g = min( cl.g, maxrb*0.8 );
-  cl += dg - cl.g;
-  cl = mix(cl,vec3(.1,.05,.6),(k)*step(1.5-rainStrength,length(skyColor)));
-  k*=k;
-  sky = mix(cl, sky, k*k);
+  vec3 amb = ambientCol*ambi*.5;
+  vec3 cc = mix(amb,lightcol,cl.g);
+  sky = mix(cc*.5, sky, cl.r);
 
   int ITER =int(ceil(float(SSR_STEPS)*(1.-rough)));
 
   vec3 ret= true?mix(max(sky,gi*.25),gi,1.-outsideness):gi;
-  ret = mix(ret, getsuncol(camdir(rd)),highlight*sh*k);
+  ret = mix(ret, getsuncol(camdir(rd)),highlight*sh*(cl.r));
  bool nohit = true;
  if(fresnel-.5*rough>.01){
    #ifdef SSR
@@ -242,7 +244,7 @@ vec3 volumeWater(vec3 p1, vec3 p2,float sh, vec3 c){
   vec3 st = rd/float(WATER_VOL_STEPS+1);
   float shade =sh;
   float stlen = length(st);
-  p2=p2-st*(dither+1.);
+  p2=p2-st*(dit+1.);
   for(int i=1;i<WATER_VOL_STEPS;i++){
       shade+=shadow2(p2)*exp2(-distance(p1,p2)*WATER_THICCNESS*.01)*getCloudShadow(p2);
       c=mix((.3*shade+.1)*vec3(.05,.07,.3)*lightcol,c,exp2(-stlen*WATER_THICCNESS));
@@ -262,8 +264,7 @@ vec3 volumeLight(vec3 c,vec3 rd){
   vec3 st = rd/float(VOL_STEPS);
   vec3 p = rd;
   vec3 shade =vec3(0.);
-  vec3 hc = vec3(gl_FragCoord.xy,mod(frameCounter*3.,PI)*50.);
-  float dit = hash13(hc-hc.zxy);
+
   p-=st*fract(dit);
 
   vec3 fogColor = vec3(.058,.063,.08)*(1.+length(lightcol));
@@ -287,7 +288,7 @@ float stlen = length(st);
       shade=mix(fogColor,lc,rayl*l);
       float ext= exp2(-den);
       c=mix(shade,c,ext);
-      rba +=rb*(.1+.1*wetness)*l*rayl*rayl*(1.-ext);
+      rba +=rb*(.1+.2*wetness)*l*rayl*rayl*(1.-ext);
       p-=st;
   }
   return c+rba;
@@ -302,6 +303,11 @@ void main(){
   outsideness = smoothstep(.6,1.,texture2D(colortex7,tc).g);
   isout = outsideness>=.5;
   //c*=outsideness;
+
+  vec3 hc = vec3(gl_FragCoord.xy,mod(frameCounter*3.,PI)*50.);
+  dit = hash13(hc-hc.zxy);
+
+
   dither = fract(dither16(gl_FragCoord.xy)+frameTimeCounter*240.);
   float pd = texture2D(depthtex0,tc).r;
 
@@ -371,23 +377,20 @@ void main(){
 
   }
 
+
   if((pd<1.?depth:1e6)>=max((cloud_low-cameraPosition.y)/camdir(rd).y,0.)){
     vec3 cl = texture2D(colortex1,tc/2.+.5).rgb;
-    float maxrb = max( cl.r, cl.b );
-    float k = saturate( (cl.g-maxrb)*2.);
-    float dg = cl.g;
-    cl.g = min( cl.g, maxrb*0.8 );
-    cl += dg - cl.g;
-    cl = saturate3(cl);
-    cl = mix(cl,vec3(.1,.05,.6),(k)*step(1.5-rainStrength,length(skyColor)));
-    k*=k;
-    c = mix(cl, c,k*k);
+    vec3 amb = ambientCol*ambi*.5;
+    vec3 cc = mix(amb,lightcol,cl.g)*length(skyColor);
+    cc = mix(cc,vec3(.1,.05,.6),(1.-cl.r)*step(1.6-rainStrength,dot(skyColor,skyColor.rrr)));
+
+    c = mix(cc*.5, c,cl.r);
   }
 
 
   if(isEyeInWater>0){
     #ifdef VOLUMETRIC_WATER
-    c = volumeWater(vec3(0),p,0.,c);
+    c = volumeWater(p,vec3(0),0.,c);
     #else
     c= mix(vec3(.005,.007,.03)*lightCol,c,exp2(-depth*WATER_THICCNESS));
     #endif
