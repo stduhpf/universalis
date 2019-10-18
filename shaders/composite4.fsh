@@ -4,7 +4,6 @@
 #include "lib/trans.glsl"
 #include "lib/sky.glsl"
 
-#include "lib/clouds.set"
 
 
 
@@ -42,6 +41,7 @@ uniform int worldTime;
 
 #include "lib/ambcol.glsl"
 #include "lib/lmcol.glsl"
+#include "lib/clouds.set"
 
 vec3 lc=vec3(0.);
 
@@ -85,6 +85,7 @@ vec3 ssr2(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough){
   vec3 ret= getSky(camdir(rd),rough)*.5+dither*0.01;
   return ret;
 }
+
 
 vec3 ssr(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough, float fresnel,float highlight){
   vec3 P=p,RD=rd;

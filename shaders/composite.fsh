@@ -18,7 +18,6 @@ uniform int worldTime;
 uniform float rainStrength;
 
 
-#define iTime frameTimeCounter
 
 #define USE_METALS
 
@@ -26,76 +25,11 @@ uniform vec3 skyColor;
 
 
 
-float vnoise(vec2 a){
-  return texture2D(noisetex,a).r;
-}
-
-
-vec3 hash33(vec3 p3){
-    p3 = mod(p3+50.3,100.6)-50.3;
-	   p3 = fract(p3 * vec3(.1031, .1030, .0973));
-    p3 += dot(p3, p3.yxz+19.19);
-    return fract((p3.xxy + p3.yxx)*p3.zyx)-.5;
-}
-
-vec3 dephash(vec3 p){
-    return p+hash33(p);
-}
-
-float worley(vec3 p){
-    p+=worldTime*vec3(.1,.02,.3)*.005;
-    vec3 P =floor(p);
-    vec3 p0 = dephash(P)
-        ,p1= dephash(P+vec3(0,0,1))
-        ,p2= dephash(P+vec3(0,1,0))
-        ,p3= dephash(P+vec3(0,1,1))
-        ,p4= dephash(P+vec3(1,0,0))
-        ,p5= dephash(P+vec3(1,0,1))
-        ,p6= dephash(P+vec3(1,1,0))
-        ,p7= dephash(P+vec3(1,1,1));
-    float d0 = distance(p,p0),
-          d1 = distance(p,p1),
-          d2 = distance(p,p2),
-          d3 = distance(p,p3),
-          d4 = distance(p,p4),
-          d5 = distance(p,p5),
-          d6 = distance(p,p6),
-          d7 = distance(p,p7);
-    float md = min(min(min(d0,d1),min(d2,d3)),min(min(d4,d5),min(d6,d7)));
- return 1.-(md)*2.3;
-}
-float fbm(vec3 p){
-    vec4 p4 = vec4(p,iTime*.05);
-	float n = .7*worley((p*=8.1));
-	n=(1.+n)*worley(n*.1+(p/=8.1));
-	n+=.05*worley(p*=-vec3(15.1,19.5,14.3));
-   // n=1.-((hash33(p).r*.1+.9)*(1.-n));
-	return n*2.;
-}
-float fbm2(vec3 p){
-    vec4 p4 = vec4(p,iTime*.05);
-	float n = .7*worley((p*=8.1));
-	n=(1.+n)*worley(n*.1+(p/=8.1));
-	//n+=.05*worley(p*=19.5);
-   // n=1.-((hash33(p).r*.1+.9)*(1.-n));
-	return n*2.;
-}
-
 #include "lib/clouds.set"
 
-float cloods( vec3 p){
-    float c= fbm(.02*p*vec3(.1,.15,.2))*smoothstep(cloud_min_plane,cloud_low,p.y)*smoothstep(cloud_top_plane,cloud_high,p.y)
-    *smoothstep(-0.4,0.3,vnoise(0.0005*p.xz));
-    return smoothstep(.1,.3,c+.7*rainStrength);
-}
-float cloods2( vec3 p){
-float c= fbm2(.02*p*vec3(.1,.15,.2))*smoothstep(cloud_min_plane,cloud_low,p.y)*smoothstep(cloud_top_plane,cloud_high,p.y)
-    *smoothstep(-0.4,0.3,vnoise(0.0005*p.xz));
-    return smoothstep(.0,.5,c+.45*rainStrength);
-}
-#define it 16.
+
+#define it 8.
 #define shit 4.
-#define den (.05+.08*rainStrength)
 
 float shad(vec3 ro,vec3 rd,float d){
 	const float dist = 80.;
@@ -103,7 +37,7 @@ float shad(vec3 ro,vec3 rd,float d){
     float a =1.;
     float sts = dist/shit;
     for(int i = 0;i++<int(shit)+1;p+=rd*sts){
-        a*=exp2(-abs(sts)*max(cloods2(p),0.)*den);
+        a*=exp2(-abs(sts)*max(cloods2(p),0.)*cloud_den);
     }
 
 	return (a/shit);
@@ -130,11 +64,11 @@ vec3 trace(vec3 ro,vec3 rd,vec2 I,vec3 ld,float dpt){
     float sts = h2/it;
     for(int i = 0;i++<int(it)+1;p+=rd*sts){
         float v =max(cloods(p),0.);
-        float vp = exp2(-abs(sts)*den*v);
+        float vp = exp2(-abs(sts)*cloud_den*v);
         extinct*=(vp);
         lightness = mix(shad(p,ld,d),lightness,vp);
     }
-	return vec3(1.-(1.-extinct)*exp2(-h*.0001),lightness,extinct);
+	return vec3(1.-(1.-extinct)*exp2(-h*.0002),lightness,extinct);
 }
 
 #define sit 6.
@@ -150,11 +84,14 @@ float cloudsh(vec3 ro,vec3 rd,vec2 I){
   float d = bayer16(I*resolution);
   vec3 p = ro+(h-d*(h2-=h)/it)*rd;
   float a =0.;
-    for(int i = 0;i++<int(sit)+1&&a<sit*.8;p+=rd*h2/it){
+
+  float sts = h2/it;
+
+    for(int i = 0;i++<int(sit)+1&&a<sit*.8;p+=rd*sts){
         float v =max(cloods2(p),0.);
         a+=v;
       }
-  return exp2(-a/it*15.);
+  return exp2(-a*abs(sts)*cloud_den);
 }
 
 float hash13(vec3 p3){

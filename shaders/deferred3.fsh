@@ -154,7 +154,7 @@ void main(){
     col.rgb = getSky(rd,0.);
   }
   float ao=r,sh=1.;
-  float csh = texture2D(colortex4,tc*.5).r*.85+.15;
+  float csh = texture2D(colortex4,tc*.5).r;
   //csh = 1.;
   if(pixdpth<1.){
     #ifdef AMBIENT_OCCLUSION
