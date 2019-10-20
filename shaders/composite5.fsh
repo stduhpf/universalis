@@ -2,8 +2,8 @@
 #include "lib/essentials.glsl"
 #include "lib/shadowtransform.glsl"
 #include "lib/trans.glsl"
-#include "lib/sky.glsl"
 
+uniform vec3 shadowLightPosition;
 
 
 
@@ -18,8 +18,6 @@ uniform sampler2D colortex2;
 uniform float frameTimeCounter;
 uniform sampler2D shadowtex0;
 uniform sampler2D shadowtex1;
-uniform sampler2D shadowcolor0;
-uniform sampler2D shadowcolor1;
 
 
 uniform sampler2D noisetex;
@@ -30,39 +28,20 @@ uniform int isEyeInWater;
 uniform float wetness;
 uniform float rainStrength;
 
-uniform vec3 skyColor;
 
 
 uniform int worldTime;
 
 
-#include "lib/ambcol.glsl"
 #include "lib/lmcol.glsl"
 #include "lib/clouds.set"
 
 vec3 lc=vec3(0.);
 
-#define SSR
-#define SHADOW_SPACE_REFLECTION
-
-
-#define SSR_STEPS 8 //[4 8 12 16 24 32 64]$
-#define SSR_REJECTION
-#define SSR_FILTER 4 //[1 2 4 8 16]
-
-#define SSR_MIN_PREC .05 //[.02 .03 .04 .05 .06 .07 .08 .1 .2]
-
-#define SHSR_STEPS 8 //[4 8 12 16 24 32 64]
-#define SHSR_PREC .4 //[.05 .1 .15 .2 .25 .3 .35 .4 .45 .5 .55]
-#define SHSR_PREC_BIAS .2 //[.01 .02 .03 .04 .05 .06 .07 .08 .09 .1 .11 .12 .13 .14 .15 .16 .17 .18 .19 .2 .22 .24 .26 .28 .3 .35 .4 .5 1.]
-
-//#define shadowtex1 shadowtex0
 #define GA 2.39996322973
 const mat2 Grot = mat2(cos(GA),sin(GA),-sin(GA),cos(GA));
 #include "lib/shadow.glsl"
 
-bool isout=false;
-float outsideness = 0.;
 
 vec3 lightDir,lightcol;
 

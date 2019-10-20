@@ -31,7 +31,7 @@ void main(){
   pclipPos=pclipPos*.5+.5;
 
   vec3 lastc = floor(pclipPos.xy)==vec2(0.)?neighborhoodClip(tc,texture2D(colortex6, pclipPos.xy).rgb,colortex0):c;
-  c=mix(lastc,c,.1);
+  c=mix(lastc,c,.15);
   gl_FragData[1]=vec4(c,1.);
 
   gl_FragData[0] = vec4(c,1.);

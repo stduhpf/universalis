@@ -336,7 +336,8 @@ void main(){
   lc = lightcol;
 
   vec3 rd = normalize(viewp);
-  float roughness = pow(1 - pbr.r, 2);
+  float roughness = (1 - pbr.r);
+  roughness*=roughness;
   float fresnel=0.;
   //pbr.g++;
   #ifdef USE_METALS

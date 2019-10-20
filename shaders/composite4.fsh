@@ -1,7 +1,4 @@
 #version 120
-#include "lib/essentials.glsl"
-#include "lib/trans.glsl"
-#include "lib/temp.glsl"
 
 
 varying vec2 tc;

@@ -18,7 +18,7 @@ uniform float rainStrength;
 #define iTime frameTimeCounter
 
 
-#include "lib/clouds.set"
+#include "lib/clouds.glsl"
 
 #define it 2.
 

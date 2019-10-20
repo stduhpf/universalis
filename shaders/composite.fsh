@@ -25,11 +25,11 @@ uniform vec3 skyColor;
 
 
 
-#include "lib/clouds.set"
+#include "lib/clouds.glsl"
 
 
-#define it 8.
-#define shit 4.
+#define it 4.
+#define shit 2.
 
 float shad(vec3 ro,vec3 rd,float d){
 	const float dist = 80.;
@@ -71,7 +71,7 @@ vec3 trace(vec3 ro,vec3 rd,vec2 I,vec3 ld,float dpt){
 	return vec3(1.-(1.-extinct)*exp2(-h*.0002),lightness,extinct);
 }
 
-#define sit 6.
+#define sit 4.
 float cloudsh(vec3 ro,vec3 rd,vec2 I){
   float h = (cloud_min_plane-ro.y)/(rd.y);
   float h2 = (cloud_top_plane-ro.y)/(rd.y);
