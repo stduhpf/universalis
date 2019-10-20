@@ -51,3 +51,5 @@ Thanks to Daxnitro, Karyonix and Sp64x for creating, maintaining, and improving 
 Thanks to all the folks at the shaderLabs Discord server for inspiring me and motivating me to keep this project alive.
 
 And thanks to the 5 people who tried my shaderpack who made me keep going with this mess.
+
+if you want to contact me, or give me money via paypal, heres' my adress: stduhpf.dev@gmail.com
