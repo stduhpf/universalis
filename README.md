@@ -52,4 +52,4 @@ Thanks to all the folks at the shaderLabs Discord server for inspiring me and mo
 
 And thanks to the 5 people who tried my shaderpack who made me keep going with this mess.
 
-if you want to contact me, or give me money via paypal, heres' my adress: stduhpf.dev@gmail.com
+If you want to contact me, or give me money via paypal, heres' my adress: stduhpf.dev@gmail.com
