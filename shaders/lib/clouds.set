@@ -47,19 +47,30 @@ float worley(vec3 p){
     float md = min(min(min(d0,d1),min(d2,d3)),min(min(d4,d5),min(d6,d7)));
  return 1.-(md)*2.3;
 }
+#define CLOUD_DETAILS 2 //[1 2 3]
+#define turb .05
+#define med .5
+#define smol .1
+#define mini .05
+
+#define CLOUD_SCALE .75
+
 float fbm(vec3 p){
-    vec4 p4 = vec4(p,iTime*.05);
-	float n = .7*worley((p*=8.1));
-	n=(1.+n)*worley(n*.1+(p/=8.1));
-	n+=.05*worley(p*=-vec3(15.1,19.5,14.3));
+	float n = worley((p*=8.1*CLOUD_SCALE));
+	n=(1.+n*med)*worley(n*turb+(p/=8.1));
+  #if(CLOUD_DETAILS>1)
+	n+=smol*worley(p*=-vec3(15.1,19.5,14.3));
+  #if(CLOUD_DETAILS>2)
+  n+=mini*worley(p*=-vec3(2.1,1.5,2.3));
+  #endif
+  #endif
    // n=1.-((hash33c(p).r*.1+.9)*(1.-n));
 	return n*2.;
 }
 float fbm2(vec3 p){
-    vec4 p4 = vec4(p,iTime*.05);
-	float n = .7*worley((p*=8.1));
-	n=(1.+n)*worley(n*.1+(p/=8.1));
-	//n+=.05*worley(p*=19.5);
+	float n = .7*worley((p*=8.1*CLOUD_SCALE));
+	n=(1.+n*med)*worley(n*turb+(p/=8.1));
+	//n+=smol*worley(p*=-vec3(15.1,19.5,14.3));
    // n=1.-((hash33c(p).r*.1+.9)*(1.-n));
 	return n*2.;
 }
