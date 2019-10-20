@@ -1,6 +1,6 @@
 #include "clouds.set"
 float vnoise(vec2 a){
-  return texture2D(noisetex,a).r;
+  return texture2D(noisetex,fract(a)).r;
 }
 
 
@@ -16,7 +16,7 @@ vec3 dephash(vec3 p){
 }
 
 float worley(vec3 p){
-    p+=worldTime*vec3(.1,.02,.3)*.005;
+    p+=worldtime*vec3(.1,.02,.3)*.005;
     vec3 P =floor(p);
     vec3 p0 = dephash(P)
         ,p1= dephash(P+vec3(0,0,1))
@@ -40,32 +40,44 @@ float worley(vec3 p){
 
 
 float fbm(vec3 p){
-	float n = worley((p*=8.1*CLOUD_SCALE));
-	n=(1.+n*med)*worley(n*turb+(p/=8.1));
+	float n = worley((p*=4.1*CLOUD_SCALE));
+	n=(1.+n*med)*worley(n*turb+(p/=4.1));
   #if(CLOUD_DETAILS>1)
 	n+=smol*worley(p*=-vec3(15.1,19.5,14.3));
   #if(CLOUD_DETAILS>2)
-  n+=mini*worley(p*=-vec3(2.1,1.5,2.3));
+  n+=mini*worley(p*=-vec3(4.1,2.5,4.3));
   #endif
   #endif
    // n=1.-((hash33c(p).r*.1+.9)*(1.-n));
 	return n*2.;
 }
 float fbm2(vec3 p){
-	float n = .7*worley((p*=8.1*CLOUD_SCALE));
-	n=(1.+n*med)*worley(n*turb+(p/=8.1));
-	//n+=smol*worley(p*=-vec3(15.1,19.5,14.3));
-   // n=1.-((hash33c(p).r*.1+.9)*(1.-n));
+	float n = worley((p*=4.1*CLOUD_SCALE));
+	n=(1.+n*med)*worley(n*turb+(p/=4.1));
+  #if(CLOUD_LIGHTING_DETAILS>1)
+  n+=smol*worley(p*=-vec3(15.1,19.5,14.3));
+  #if(CLOUD_LIGHTING_DETAILS>2)
+  n+=mini*worley(p*=-vec3(4.1,2.5,4.3));
+  #endif
+  #endif
+     // n=1.-((hash33c(p).r*.1+.9)*(1.-n));
 	return n*2.;
 }
 
 float cloods( vec3 p){
-    float c= fbm(.02*p*vec3(.1,.15,.2))*smoothstep(cloud_min_plane,cloud_low,p.y)*smoothstep(cloud_top_plane,cloud_high,p.y)
-    *smoothstep(-0.4,0.3,vnoise(0.0005*p.xz));
+  float c=fbm(.02*p*vec3(.1,.15,.2));
+  float lowbound = smoothstep(cloud_min_plane,cloud_low,p.y),highbound = smoothstep(cloud_top_plane,cloud_high,p.y);
+  highbound=sqrt(highbound);
+    c*= lowbound*highbound
+    *smoothstep(0.4,0.2,vnoise(0.000001*p.xz-vec2(worldtime)*.0000005));
     return smoothstep(.1,.3,c+.7*rainStrength);
 }
 float cloods2( vec3 p){
-float c= fbm2(.02*p*vec3(.1,.15,.2))*smoothstep(cloud_min_plane,cloud_low,p.y)*smoothstep(cloud_top_plane,cloud_high,p.y)
-    *smoothstep(-0.4,0.3,vnoise(0.0005*p.xz));
+  float c= fbm2(.02*p*vec3(.1,.15,.2));
+  float lowbound = smoothstep(cloud_min_plane,cloud_low,p.y),highbound = smoothstep(cloud_top_plane,cloud_high,p.y);
+  highbound=sqrt(highbound);
+
+c*=lowbound*highbound
+*smoothstep(0.4,0.2,vnoise(0.000001*p.xz-vec2(worldtime)*.0000005));
     return smoothstep(.0,.5,c+.45*rainStrength);
 }

@@ -28,19 +28,19 @@ uniform vec3 skyColor;
 #include "lib/clouds.glsl"
 
 
-#define it 4.
-#define shit 2.
+#define CLOUD_RAYTRACING_QUALITY 4.0 //[1.0 2.0 4.0 8.0 16.0 32.0 64.0 128.0]
+#define CLOUD_LIGHTING_QUALITY 2.0 //[1.0 2.0 4.0 8.0 16.0 32.0 64.0 128.0]
 
 float shad(vec3 ro,vec3 rd,float d){
 	const float dist = 80.;
-    vec3 p = ro+dist*rd*d/shit;
+    vec3 p = ro+dist*rd*d/CLOUD_LIGHTING_QUALITY;
     float a =1.;
-    float sts = dist/shit;
-    for(int i = 0;i++<int(shit)+1;p+=rd*sts){
+    float sts = dist/CLOUD_LIGHTING_QUALITY;
+    for(int i = 0;i++<int(CLOUD_LIGHTING_QUALITY)+1;p+=rd*sts){
         a*=exp2(-abs(sts)*max(cloods2(p),0.)*cloud_den);
     }
 
-	return (a/shit);
+	return (a);
 }
 #include "lib/ambcol.glsl"
 
@@ -60,9 +60,9 @@ vec3 trace(vec3 ro,vec3 rd,vec2 I,vec3 ld,float dpt){
 
   float extinct = 1.;
   float lightness = 0.;
-  vec3 p = ro+(h-d*(h2-=h)/it)*rd;
-    float sts = h2/it;
-    for(int i = 0;i++<int(it)+1;p+=rd*sts){
+  vec3 p = ro+(h-d*(h2-=h)/CLOUD_RAYTRACING_QUALITY)*rd;
+    float sts = h2/CLOUD_RAYTRACING_QUALITY;
+    for(int i = 0;i++<int(CLOUD_RAYTRACING_QUALITY)+1;p+=rd*sts){
         float v =max(cloods(p),0.);
         float vp = exp2(-abs(sts)*cloud_den*v);
         extinct*=(vp);
@@ -71,7 +71,7 @@ vec3 trace(vec3 ro,vec3 rd,vec2 I,vec3 ld,float dpt){
 	return vec3(1.-(1.-extinct)*exp2(-h*.0002),lightness,extinct);
 }
 
-#define sit 4.
+#define CLOUD_VL_QUALITY 4.0 //[1.0 2.0 4.0 8.0 16.0 32.0 64.0 128.0]
 float cloudsh(vec3 ro,vec3 rd,vec2 I){
   float h = (cloud_min_plane-ro.y)/(rd.y);
   float h2 = (cloud_top_plane-ro.y)/(rd.y);
@@ -82,12 +82,12 @@ float cloudsh(vec3 ro,vec3 rd,vec2 I){
   h2 = minp(t,h2);
   if(h2==0.)h=min(h,240.);
   float d = bayer16(I*resolution);
-  vec3 p = ro+(h-d*(h2-=h)/it)*rd;
+  vec3 p = ro+(h-d*(h2-=h)/CLOUD_VL_QUALITY)*rd;
   float a =0.;
 
-  float sts = h2/it;
+  float sts = h2/CLOUD_VL_QUALITY;
 
-    for(int i = 0;i++<int(sit)+1&&a<sit*.8;p+=rd*sts){
+    for(int i = 0;i++<int(CLOUD_VL_QUALITY)+1&&a<CLOUD_VL_QUALITY*.8;p+=rd*sts){
         float v =max(cloods2(p),0.);
         a+=v;
       }

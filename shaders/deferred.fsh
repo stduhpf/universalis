@@ -20,7 +20,7 @@ uniform float rainStrength;
 
 #include "lib/clouds.glsl"
 
-#define it 2.
+#define CLOUD_SHADOW_QUALITY 2.0 //[1.0 2.0 4.0 8.0 16.0 32.0 64.0 128.0]
 
 float cloudsh(vec3 ro,vec3 rd,vec2 I){
   float h = dot(vec3(0,cloud_min_plane,0)-ro,vec3(0,1,0))/dot(rd,vec3(0,1,0));
@@ -32,10 +32,10 @@ float cloudsh(vec3 ro,vec3 rd,vec2 I){
   h2 = minp(t,h2);
   if(h2==0.)h=min(h,100.);
   float d = bayer16(I*resolution);
-  vec3 p = ro+(h-d*(h2-=h)/it)*rd;
+  vec3 p = ro+(h-d*(h2-=h)/CLOUD_SHADOW_QUALITY)*rd;
   float a =0.;
-  float sts = h2/it;
-    for(int i = 0;i++<int(it)+1&&a<it*.8;p+=rd*sts){
+  float sts = h2/CLOUD_SHADOW_QUALITY;
+    for(int i = 0;i++<int(CLOUD_SHADOW_QUALITY)+1&&a<CLOUD_SHADOW_QUALITY*.8;p+=rd*sts){
         float v =max(cloods2(p),0.);
         a+=v;
       }

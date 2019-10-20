@@ -1,17 +1,20 @@
 #define cloud_min_plane 270.
-#define cloud_top_plane 430.
+#define cloud_top_plane 490.
 #define cloud_low 300.
 #define cloud_high 390.
 
 #define cloud_mid cloud_low*.5+.5*cloud_high
 #define cloud_den (.05+.08*rainStrength)
 
-#define iTime frameTimeCounter
+uniform int worldDay;
+int worldtime = (worldTime + 2400*worldDay);
 
 #define CLOUD_DETAILS 2 //[1 2 3]
-#define turb .05
-#define med .5
+#define CLOUD_LIGHTING_DETAILS 1 //[1 2 3]
+
+#define turb -.05
+#define med .75
 #define smol .1
-#define mini .05
+#define mini .07
 
 #define CLOUD_SCALE .75
