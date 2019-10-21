@@ -64,20 +64,20 @@ float fbm2(vec3 p){
 	return n*2.;
 }
 
-float cloods( vec3 p){
-  float c=fbm(.02*p*vec3(.1,.15,.2));
+float clf(vec3 p, float c){
   float lowbound = smoothstep(cloud_min_plane,cloud_low,p.y),highbound = smoothstep(cloud_top_plane,cloud_high,p.y);
   highbound=sqrt(highbound);
     c*= lowbound*highbound
-    *smoothstep(0.4,0.2,vnoise(0.000001*p.xz-vec2(worldtime)*.0000005));
+    *max(smoothstep(0.4,0.2,vnoise(0.000001*p.xz-vec2(worldtime)*.0000005)),max(rainStrength,wetness));
     return smoothstep(.1,.3,c+.7*rainStrength);
+}
+
+
+float cloods( vec3 p){
+    float c=fbm(.02*p*vec3(.1,.15,.2));
+    return clf( p, c);
 }
 float cloods2( vec3 p){
   float c= fbm2(.02*p*vec3(.1,.15,.2));
-  float lowbound = smoothstep(cloud_min_plane,cloud_low,p.y),highbound = smoothstep(cloud_top_plane,cloud_high,p.y);
-  highbound=sqrt(highbound);
-
-c*=lowbound*highbound
-*smoothstep(0.4,0.2,vnoise(0.000001*p.xz-vec2(worldtime)*.0000005));
-    return smoothstep(.0,.5,c+.45*rainStrength);
+  return clf( p, c);
 }

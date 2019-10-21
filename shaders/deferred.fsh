@@ -13,6 +13,7 @@ uniform sampler2D noisetex;
 uniform float frameTimeCounter;
 uniform int worldTime;
 uniform float rainStrength;
+uniform float wetness;
 
 
 #define iTime frameTimeCounter

@@ -16,6 +16,7 @@ uniform sampler2D colortex3;
 uniform float frameTimeCounter;
 uniform int worldTime;
 uniform float rainStrength;
+uniform float wetness;
 
 
 
