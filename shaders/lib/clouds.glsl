@@ -1,7 +1,23 @@
 #include "clouds.set"
 
+const int noiseTextureResolution = 1024;
+
 float vnoise(vec2 a){
-  return texture2D(noisetex,fract(a)).r;
+  vec2 b = floor(a);
+  a=fract(a);
+  const float res = float(noiseTextureResolution);
+  vec2 g1 = texture2D(noisetex,fract(b/res)).rg;
+  vec2 g2 = texture2D(noisetex,fract((b+vec2(0,1))/res)).rg;
+  vec2 g3 = texture2D(noisetex,fract((b+vec2(1,0))/res)).rg;
+  vec2 g4 = texture2D(noisetex,fract((b+1.)/res)).rg;
+  float d1 = dot(a,g1);
+  float d2 = dot(a-vec2(0,1),g2);
+  float d3 = dot(a-vec2(1,0),g3);
+  float d4 = dot(a-1.,g4);
+
+  a=smoothstep(0.,1.,a);
+  float n = mix(mix(d1,d2,a.x),mix(d3,d4,a.x),a.y);
+  return n+.5;
 }
 
 
@@ -69,7 +85,7 @@ float clf(vec3 p, float c){
   float lowbound = smoothstep(cloud_min_plane,cloud_low,p.y),highbound = smoothstep(cloud_top_plane,cloud_high,p.y);
   highbound=sqrt(highbound);
     c*= lowbound*highbound
-    *max(smoothstep(0.4,0.2,vnoise(0.000001*p.xz-vec2(worldtime)*.0000005)),max(rainStrength,wetness));
+    *max(smoothstep(0.6,0.3,vnoise(0.00001*(p.xz-vec2(worldtime)*5.))),max(rainStrength,wetness));
     return smoothstep(.1,.3,c+.7*rainStrength);
 }
 

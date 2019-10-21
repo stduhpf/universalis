@@ -7,7 +7,7 @@
 #define cloud_den (.05+.08*rainStrength)
 
 uniform int worldDay;
-int worldtime = (worldTime + 2400*worldDay);
+int worldtime = (worldTime + 24000*worldDay);
 
 #define CLOUD_DETAILS 2 //[1 2 3]
 #define CLOUD_LIGHTING_DETAILS 1 //[1 2 3]

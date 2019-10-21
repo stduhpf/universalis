@@ -235,8 +235,7 @@ vec3 ssrs(vec3 p, vec3 rd, float rough,float sh, float fresnel){
 
 
 
-
-#define WATER_VOL_STEPS 4 //[2 4 8 16 32]
+#define WATER_VOL_STEPS 8 //[2 4 8 16 32]
 #define VOLUMETRIC_WATER
 
 #ifdef VOLUMETRIC_WATER
@@ -257,7 +256,7 @@ vec3 volumeWater(vec3 p1, vec3 p2,float sh, vec3 c){
 }
 #endif
 
-#define VOL_STEPS 4 //[2 4 8 16 32]
+#define VOL_STEPS 8 //[2 4 8 16 32]
 #define VOLUMETRIC_LIGHT
 
 #ifdef VOLUMETRIC_LIGHT
