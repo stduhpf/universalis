@@ -1,4 +1,5 @@
 #include "clouds.set"
+
 float vnoise(vec2 a){
   return texture2D(noisetex,fract(a)).r;
 }

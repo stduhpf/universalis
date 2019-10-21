@@ -44,31 +44,31 @@ vec3 kawazePassc(sampler2D s,vec2 tc,float i,vec2 res){
 }
 
 vec4 filterCloud(sampler2D s,vec2 tc,float i,vec2 res, sampler2D d){
-  vec2 ii = (i+.5)/res;
+  vec2 ii = (1.*i+.5)/res;
   const float treshhold = 1.;
-  float a =0.;
-  vec4 c = vec4(1,0,0,0);
+  float a =1.;
   vec2 fc = fract(tc*2.);
+  vec4 c = texture2D(s,tc);
+  const float k = .75;
+
   if(min(min(fc.x,fc.y),1.-max(fc.x,fc.y))<.001*i)
     return c;
   if(treshhold<= texture2D(d,fract(2.*tc)).r ){
     fc = 2.*tc-fc;
-    float dp = float(treshhold<= texture2D(d,fract(2.*(tc+ii))).r)*float(floor(2.*(tc+ii))==fc);
-    c=texture2D(s,tc+ii)*dp;
+    float dp = float(treshhold<= texture2D(d,fract(2.*(tc+ii))).r)*float(floor(2.*(tc+ii))==fc)*k;
+    c+=texture2D(s,tc+ii)*dp;
     a+=dp;
-    dp = float(treshhold<= texture2D(d,fract(2.*(tc-ii))).r)*float(floor(2.*(tc-ii))==fc);
+    dp = float(treshhold<= texture2D(d,fract(2.*(tc-ii))).r)*float(floor(2.*(tc-ii))==fc)*k;
     c+=texture2D(s,tc-ii)*dp;
     a+=dp;
     ii.x=-ii.x;
-    dp = float(treshhold<= texture2D(d,fract(2.*(tc+ii))).r)*float(floor(2.*(tc+ii))==fc);
+    dp = float(treshhold<= texture2D(d,fract(2.*(tc+ii))).r)*float(floor(2.*(tc+ii))==fc)*k;
     c+=texture2D(s,tc+ii)*dp;
     a+=dp;
-    dp = float(treshhold<= texture2D(d,fract(2.*(tc-ii))).r)*float(floor(2.*(tc-ii))==fc);
+    dp = float(treshhold<= texture2D(d,fract(2.*(tc-ii))).r)*float(floor(2.*(tc-ii))==fc)*k;
     c+=texture2D(s,tc-ii)*dp;
     a+=dp;
   }
-  if (a<1.)
-    return texture2D(s,tc);
   return c/a;
 }
 
