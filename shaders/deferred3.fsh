@@ -132,9 +132,12 @@ vec3 rsm(float pixdpth,vec3 normal,vec3 pbr){
 	return lightCol*a*100000.*size*size/float(GI_SAMPLES);
 }
 #endif
-vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh){
+vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh,vec3 rd,vec3 n){
   #include "lib/lightcol.glsl"
-
+  #ifdef OREN_NAYAR_DIFFUSE
+    float rough = (1.-pbr.r);
+    rough*=rough;
+  #endif
   vec3 scp = vec3(tc,pixdpth);
   vec3 p = screen2cam(scp);
   vec3 sp = stransformcam(scam2clip(p))*.5+.5;
@@ -143,8 +146,13 @@ vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh){
   float s =1.;
   float i = smoothstep(sp.z-pbr.b*.015,sp.z,texture2D(shadowtex1,sp.xy).r)*exp2(-shadowDepth(p));
   vec3 col = texture2D(shadowcolor0,sp.xy).rgb*((i>=1.)?0.:i*i);//sss
-  if(texture2D(shadowtex0,sp.xy).r<texture2D(shadowtex1,sp.xy).r && i>=1.){
-    col+=texture2D(shadowcolor0,sp.xy).rgb*lightCol*2.;
+  if(texture2D(shadowtex0,sp.xy).r<texture2D(shadowtex1,sp.xy).r && sh>0.){
+    #ifdef OREN_NAYAR_DIFFUSE
+    float i = diffuse(-rd,normalize(shadowLightPosition),n,rough);
+    #else
+    float i = saturate(dot(rd,normalize(shadowLightPosition)));
+    #endif
+    col+=sh*texture2D(shadowcolor0,sp.xy).rgb*lightCol*i*2.;
     sh=0.;
   }
 //  #ifdef PCSS
@@ -163,9 +171,10 @@ void main(){
   vec3 normal = texture2D(gnormal,tc).rgb*2.-1.;
   float pixdpth = texture2D(depthtex1,tc).r;
   float r =texture2D(gdepth,tc).r;
+  vec3 rd = normalize(screen2view(vec3(tc,1.)));
+
   if(pixdpth>=1. ){
     r=1.;
-    vec3 rd = normalize(screen2cam(vec3(tc,1.)));
     /*col.rgb = texture2D(colortex4,tc/3.).rgb;
     float maxrb = max( col.r, col.b );
     float k = clamp( (col.g-maxrb)*5.0, 0.0, 1.0 );
@@ -173,7 +182,7 @@ void main(){
     col.g = min( col.g, maxrb*0.8 );
     col.rgb += dg - col.g;
     col.rgb = mix(col.rgb, getSky(rd,0.), k);*/
-    col.rgb = getSky(rd,0.);
+    col.rgb = getSky(camdir(rd),0.);
   }
   float ao=r,sh=1.;
   float csh = texture2D(colortex4,tc*.5).r;
@@ -185,7 +194,7 @@ void main(){
     sh =  shadow(pixdpth)*texture2D(gdepth,tc).g*csh;
     #ifdef GLOBAL_ILLUMINATION
       vec3 gi = rsm(pixdpth,normal,pbr);
-      gi+=colorshadow(pixdpth,pbr,sh);
+      gi+=colorshadow(pixdpth,pbr,sh,rd,normal);
       gi*=csh;
       gl_FragData[2] = vec4(gi,1.);
     #else

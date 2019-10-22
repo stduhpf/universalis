@@ -297,18 +297,7 @@ float stlen = length(st);
   return c+rba;
 }
 #endif
-vec3 colorshadow(float pixdpth,vec3 pbr){
-  vec3 scp = vec3(tc,pixdpth);
-  vec3 p = screen2cam(scp);
-  vec3 sp = stransformcam(scam2clip(p))*.5+.5;
-  sp.z-=.0001+pbr.b;
-  float s =1.;
-//  #ifdef PCSS
-//  return min(s,getSoftShadows(sp,max(getPenumbra(sp),1.41421356237/float(shadowMapResolution*MC_SHADOW_QUALITY)),pixdpth));
-//  #else
-  return texture2D(shadowtex1,sp.xy).rgb*step(sp.z-shadow_offset*(SHADOW_BIAS+length8(sp.xy)),texture2D(shadowtex1,sp.xy).r)*exp2(-shadowDepth(p));
-//  #endif
-}
+
 /*DRAWBUFFERS:04*/
 void main(){
   #include "lib/lightcol.glsl"
