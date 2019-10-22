@@ -282,7 +282,7 @@ void main()
 		gl_FragData[0].a=trans;
 		gl_FragData[1]=vec4(1,1.,srgbToLinear(c).r,1);
 		#else
-		gl_FragData[0]=vec4(0,0,0,0.);
+		gl_FragData[0]=vec4(0,0,0,0.01);
 		gl_FragData[1]=vec4(1,1.,1.,1.);
 		#endif
 

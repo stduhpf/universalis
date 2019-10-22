@@ -95,7 +95,7 @@ float diffuse(vec3 v, vec3 l, vec3 n, float r) {
 
 #ifdef GLOBAL_ILLUMINATION
 
-vec3 rsm(float pixdpth,vec3 normal){
+vec3 rsm(float pixdpth,vec3 normal,vec3 pbr){
   normal = (camdir(normal));
   vec3 view = screen2view(vec3(tc,pixdpth));
   vec3 p = view2cam(view);
@@ -109,7 +109,7 @@ vec3 rsm(float pixdpth,vec3 normal){
   angle*=rot((dither+sign(dither)*10*seq)*6.28318530718);
   float r = 1.+fract(.5+dither-sign(dither)*24*seq);
   #ifdef OREN_NAYAR_DIFFUSE
-    float rough = (1.-texture2D(colortex3,tc).r);
+    float rough = (1.-pbr.r);
     rough*=rough;
   #endif
   for(int i = 0;i<GI_SAMPLES;i++){
@@ -132,10 +132,32 @@ vec3 rsm(float pixdpth,vec3 normal){
 	return lightCol*a*100000.*size*size/float(GI_SAMPLES);
 }
 #endif
+vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh){
+  #include "lib/lightcol.glsl"
 
+  vec3 scp = vec3(tc,pixdpth);
+  vec3 p = screen2cam(scp);
+  vec3 sp = stransformcam(scam2clip(p))*.5+.5;
+  sp.z-=.0001;
+  sp.z = sp.z-shadow_offset*(SHADOW_BIAS+length8(sp.xy));
+  float s =1.;
+  float i = smoothstep(sp.z-pbr.b*.015,sp.z,texture2D(shadowtex1,sp.xy).r)*exp2(-shadowDepth(p));
+  vec3 col = texture2D(shadowcolor0,sp.xy).rgb*((i>=1.)?0.:i*i);//sss
+  if(texture2D(shadowtex0,sp.xy).r<texture2D(shadowtex1,sp.xy).r && i>=1.){
+    col+=texture2D(shadowcolor0,sp.xy).rgb*lightCol*2.;
+    sh=0.;
+  }
+//  #ifdef PCSS
+//  return min(s,getSoftShadows(sp,max(getPenumbra(sp),1.41421356237/float(shadowMapResolution*MC_SHADOW_QUALITY)),pixdpth));
+//  #else
+  return col*2.;
+//  #endif
+}
 /*DRAWBUFFERS:014*/
 void main(){
   vec4 col = texture2D(gcolor,tc);
+  vec3 pbr = texture2D(colortex3,tc).rgb;
+
 
   dither = dither16(gl_FragCoord.xy);
   vec3 normal = texture2D(gnormal,tc).rgb*2.-1.;
@@ -160,18 +182,20 @@ void main(){
     #ifdef AMBIENT_OCCLUSION
       ao *= ssao(pixdpth,normal);
     #endif
+    sh =  shadow(pixdpth)*texture2D(gdepth,tc).g*csh;
     #ifdef GLOBAL_ILLUMINATION
-      vec3 gi = rsm(pixdpth,normal)*csh;
+      vec3 gi = rsm(pixdpth,normal,pbr);
+      gi+=colorshadow(pixdpth,pbr,sh);
+      gi*=csh;
       gl_FragData[2] = vec4(gi,1.);
     #else
       gl_FragData[2] = vec4(0.,0.,0.,1.);
     #endif
-    sh =  shadow(pixdpth)*texture2D(gdepth,tc).g* csh;
   }else{
     gl_FragData[2] = vec4(0,0,0,1.);
   }
 
-  col.rgb*=.5*r;
+  col.rgb*=.5;
   gl_FragData[0] = col;
   gl_FragData[1] = vec4(ao,sh,r,1);
 }

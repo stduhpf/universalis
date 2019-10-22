@@ -188,7 +188,8 @@ void main()
   #else
   vec4 PBRdata = vec4(0);
   #endif
-	float porosity = PBRdata.b<.251?PBRdata.b/.251:0.;
+	float porosity = PBRdata.b<.251?PBRdata.b*4.:0.;
+	PBRdata.b=saturate((PBRdata.b-.25)/.75);
 	float wet = wetness*smoothstep(.8,.93,lm.y);
 	float puddle=0.;
 	if(wet>0. && camdir(normal).y>.99){
