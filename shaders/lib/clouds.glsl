@@ -1,6 +1,6 @@
 #include "clouds.set"
 
-const int noiseTextureResolution = 1024;
+const int noiseTextureResolution = 256;
 
 float vnoise(vec2 a){
   vec2 b = floor(a);
