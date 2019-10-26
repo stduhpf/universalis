@@ -3,6 +3,8 @@ A minecraft shaderpack.
 
 This shaderpack is 100% AMD compatible because i use a Radeon RX 580 to developp it. 
 
+Official releases and dev news on ShaderLabs: https://discord.gg/RpzWN9S
+
 ## Features:
 -Dynamic shadows
 
