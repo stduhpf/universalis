@@ -6,17 +6,17 @@ float vnoise(vec2 a){
   vec2 b = floor(a);
   a=fract(a);
   const float res = float(noiseTextureResolution);
-  vec2 g1 = texture2D(noisetex,fract(b/res)).rg;
-  vec2 g2 = texture2D(noisetex,fract((b+vec2(0,1))/res)).rg;
-  vec2 g3 = texture2D(noisetex,fract((b+vec2(1,0))/res)).rg;
-  vec2 g4 = texture2D(noisetex,fract((b+1.)/res)).rg;
+  vec2 g1 = texture2D(noisetex,(b/res)).rg*2.-1.;
+  vec2 g2 = texture2D(noisetex,((b+vec2(0,1))/res)).rg*2.-1.;
+  vec2 g3 = texture2D(noisetex,((b+vec2(1,0))/res)).rg*2.-1.;
+  vec2 g4 = texture2D(noisetex,((b+1.)/res)).rg*2.-1.;
   float d1 = dot(a,g1);
   float d2 = dot(a-vec2(0,1),g2);
   float d3 = dot(a-vec2(1,0),g3);
   float d4 = dot(a-1.,g4);
 
   a=smoothstep(0.,1.,a);
-  float n = mix(mix(d1,d2,a.x),mix(d3,d4,a.x),a.y);
+  float n = mix(mix(d1,d2,a.y),mix(d3,d4,a.y),a.x);
   return n+.5;
 }
 

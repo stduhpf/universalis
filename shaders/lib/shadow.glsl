@@ -34,12 +34,12 @@ float getPenumbra(vec3 sp){
   }
 }
 
-#define WATER_THICCNESS 0.25 //[0.0 0.0004 0.0016 0.0036 0.0064 0.01 0.0144 0.0196 0.0256 0.0324 0.04 0.0484 0.0576 0.0676 0.0784 0.09 0.1024 0.1156 0.1296 0.1444 0.16 0.1764 0.1936 0.2116 0.2304 0.25 0.2704 0.2916 0.3136 0.3364 0.36 0.3844 0.4096 0.4356 0.4624 0.49 0.5184 0.5476 0.5776 0.6084 0.64 0.6724 0.7056 0.7396 0.7744 0.81 0.8464 0.8836 0.9216 0.9604 1.0]
+#define WATER_THICCNESS 0.1024 //[0.0 0.0004 0.0016 0.0036 0.0064 0.01 0.0144 0.0196 0.0256 0.0324 0.04 0.0484 0.0576 0.0676 0.0784 0.09 0.1024 0.1156 0.1296 0.1444 0.16 0.1764 0.1936 0.2116 0.2304 0.25 0.2704 0.2916 0.3136 0.3364 0.36 0.3844 0.4096 0.4356 0.4624 0.49 0.5184 0.5476 0.5776 0.6084 0.64 0.6724 0.7056 0.7396 0.7744 0.81 0.8464 0.8836 0.9216 0.9604 1.0]
 #define WATER_ABSORB
 float shadowDepth(vec3 p){
   #ifdef WATER_ABSORB
     vec3 sp = stransformcam(scam2clip(p))*.5+.5;
-    return 0.*max(0.,-sdepthLin(sp.z)+sdepthLin(texture2D(shadowtex0,sp.xy).r))*WATER_THICCNESS*3.1;
+    return max(0.,-sdepthLin(sp.z)+sdepthLin(texture2D(shadowtex0,sp.xy).r))*WATER_THICCNESS;
     #else
     return 0.;
     #endif
@@ -56,7 +56,7 @@ float getSoftShadows(vec3 sp, float pen,float d){
     angle *= Grot;
     vec2 sc = (r-1.)*angle+sp.xy;
     float depth =(texture2D(shadowtex1,sc).r);
-    a+= step(sp.z-shadow_offset*(SHADOW_BIAS+length8(sc)),depth)*exp2(-shadowDepth(vec3(sc,depth)));
+    a+= step(sp.z-shadow_offset*(SHADOW_BIAS+length8(sc)),depth);
   }
 return a/float(PCSS_SAMPLES);
 }
@@ -103,7 +103,7 @@ float shadow(float pixdpth){
   float s =1.;
   #endif
   #ifdef PCSS
-  return min(s,getSoftShadows(sp,max(getPenumbra(sp),1.41421356237/float(shadowMapResolution*MC_SHADOW_QUALITY)),pixdpth));
+  return min(s,getSoftShadows(sp,max(getPenumbra(sp),1.41421356237/float(shadowMapResolution*MC_SHADOW_QUALITY)),pixdpth))*exp2(-shadowDepth(p));
   #else
   return step(sp.z-shadow_offset*(SHADOW_BIAS+length8(sp.xy)),texture2D(shadowtex1,sp.xy).r)*exp2(-shadowDepth(p));
   #endif
@@ -118,11 +118,12 @@ float shadow2(vec3 p){
   return step(sp.z,texture2D(shadowtex1,sp.xy).r)*exp2(-shadowDepth(p));
   #endif
 }
-float shadow3(vec3 p){
-  vec3 sp = stransformcam(scam2clip(screen2cam(p)))*.5+.5;
+float shadow3(vec3 p0){
+  vec3 p=screen2cam(p0);
+  vec3 sp = stransformcam(scam2clip(p))*.5+.5;
   sp.z-=.0001;
   #ifdef PCSS
-  return getSoftShadows(sp,max(getPenumbra(sp),1.41421356237/float(shadowMapResolution*MC_SHADOW_QUALITY)),p.z);
+  return getSoftShadows(sp,max(getPenumbra(sp),1.41421356237/float(shadowMapResolution*MC_SHADOW_QUALITY)),p0.z)*exp2(-shadowDepth(p));
   #else
   return step(sp.z-shadow_offset*(SHADOW_BIAS+length8(sp.xy)),texture2D(shadowtex1,sp.xy).r);
   #endif

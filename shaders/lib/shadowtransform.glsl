@@ -41,7 +41,7 @@ vec3 scamdir(vec3 viewdir){
   return d.xyz;
 }
 
-#define scam2clip(campos)        sview2clip(scam2view(campos))
+#define scam2clip(campos) sview2clip(scam2view(campos))
 
 
 #define SHADOW_BIAS .4 //[.1 .2 .4 .6 .8 1. 1.2 1.4 1.6]
@@ -62,5 +62,7 @@ float stransformd(float camdepth){
 
 
 float sdepthLin(float depth){
-  return depth;
+  float diff = -2./shadowProjection[2][2];
+  float somm = 2.*shadowProjection[2][3]/shadowProjection[2][2];
+  return (diff)*(somm-diff)*.5 / (somm - depth * (diff));
 }
