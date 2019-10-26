@@ -135,7 +135,7 @@ vec3 ssr(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough, float fresnel,fl
           float m  = texture2D(colortex3,p.xy).g;
           #ifdef USE_METALS
           if(m>.9)
-            ret*=texture2D(colortex4,p.xy).rgb;
+            ret*=texture2D(colortex4,p.xy).rgb*.25;
           #endif
 
         }
