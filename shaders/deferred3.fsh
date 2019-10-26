@@ -145,7 +145,7 @@ vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh,vec3 rd,vec3 n){
   sp.z = sp.z-shadow_offset*(SHADOW_BIAS+length8(sp.xy));
   float s =1.;
   float i = smoothstep(sp.z-pbr.b*.015,sp.z,texture2D(shadowtex1,sp.xy).r);
-  vec3 col = texture2D(shadowcolor0,sp.xy).rgb*((i>=1.)?0.:i*i)*lightCol;//sss
+  vec3 col = texture2D(gcolor,tc.xy).rgb*((i>=1.)?0.:i*i)*lightCol;//sss
   if(texture2D(shadowtex0,sp.xy).r<texture2D(shadowtex1,sp.xy).r && sh>0.){
     #ifdef OREN_NAYAR_DIFFUSE
     float i = diffuse(-rd,normalize(shadowLightPosition),n,rough);
