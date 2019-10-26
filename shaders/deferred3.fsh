@@ -44,6 +44,7 @@ const mat2 Grot = mat2(cos(GA),sin(GA),-sin(GA),cos(GA));
 float dither = 0;
 
 #ifdef AMBIENT_OCCLUSION
+//#define COLORED_SHADOW
 
 float ssao(float pixdpth, vec3 n){
   vec3 p =screen2view(vec3(tc,pixdpth));
@@ -146,6 +147,7 @@ vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh,vec3 rd,vec3 n){
   float s =1.;
   float i = smoothstep(sp.z-pbr.b*.015,sp.z,texture2D(shadowtex1,sp.xy).r);
   vec3 col = texture2D(gcolor,tc.xy).rgb*((i>=1.)?0.:i*i)*lightCol;//sss
+  #ifdef COLORED_SHADOW
   if(texture2D(shadowtex0,sp.xy).r<texture2D(shadowtex1,sp.xy).r && sh>0.){
     #ifdef OREN_NAYAR_DIFFUSE
     float i = diffuse(-rd,normalize(shadowLightPosition),n,rough);
@@ -155,6 +157,7 @@ vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh,vec3 rd,vec3 n){
     col+=sh*texture2D(shadowcolor0,sp.xy).rgb*lightCol*i*2.;
     sh=0.;
   }
+  #endif
 //  #ifdef PCSS
 //  return min(s,getSoftShadows(sp,max(getPenumbra(sp),1.41421356237/float(shadowMapResolution*MC_SHADOW_QUALITY)),pixdpth));
 //  #else
