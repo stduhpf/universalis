@@ -100,7 +100,7 @@ vec3 ssr2(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough){
 vec3 ssr(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough, float fresnel,float highlight){
   vec3 P=p,RD=rd;
   rd = reflect(rd,n);
-  vec3 gi = texture2D(colortex4,tc).rgb*.5;
+  vec3 gi = texture2D(colortex4,tc).rgb*.25;
   vec3 sky = .5*(getSky2(camdir(rd))+dither*0.01);
 
   vec3 cl = texture2D(colortex1,tc*.5).rgb;
