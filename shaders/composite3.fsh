@@ -174,7 +174,7 @@ vec3 ssr(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough, float fresnel,fl
           if(sc.z-depth<abs(stepl*stepl*.001)&&depth<1.){
             vec3 n = texture2D(shadowcolor1,sc.xy).rgb*2.-1.;
             vec3 l = lc*max(0.,n.z)*getCloudShadow(p)+ambi*ambientCol;
-            ret = l*texture2D(shadowcolor0,sc.xy).rgb*.5;
+            ret = l*texture2D(shadowcolor0,sc.xy).rgb;
           break;
         }
       }
