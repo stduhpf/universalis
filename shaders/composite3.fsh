@@ -391,7 +391,7 @@ void main(){
   if((pd<1.?depth:1e6)>=max((cloud_low-cameraPosition.y)/camdir(rd).y,0.)){
     vec3 cl = texture2D(colortex1,tc/2.+.5).rgb;
     vec3 amb = ambientCol*ambi*.5;
-    vec3 cc = mix(amb,lightcol,cl.g)*length(skyColor);
+    vec3 cc = mix(amb,lightcol,cl.g);
     cc = mix(cc,vec3(.1,.05,.6),(1.-cl.r)*step(1.6-rainStrength,dot(skyColor,skyColor.rrr)));
 
     c = mix(cc*.5, c,cl.r);
