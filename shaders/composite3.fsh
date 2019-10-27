@@ -302,6 +302,8 @@ float stlen = length(st);
 void main(){
   #include "lib/lightcol.glsl"
   lightDir=lightdir,lightcol=lightCol;
+
+  #include "lib/thunder.glsl"
   vec3 c = texture2D(colortex0,tc).rgb;
   vec3 refc = vec3(0);
   outsideness = smoothstep(.6,1.,texture2D(colortex7,tc).g);
@@ -392,11 +394,9 @@ void main(){
     vec3 cl = texture2D(colortex1,tc/2.+.5).rgb;
     vec3 amb = ambientCol*ambi*.5;
     vec3 cc = mix(amb,lightcol,cl.g);
-    cc = mix(cc,vec3(.1,.05,.6),(1.-cl.r)*step(1.6-rainStrength,dot(skyColor,skyColor.rrr)));
-
+    cc = mix(cc,vec3(.1,.05,.6),(1.-cl.r)*bolt);
     c = mix(cc*.5, c,cl.r);
   }
-
 
   gl_FragData[0] = vec4(c,1.);//texture2D(colortex1,tc*.5+vec2(.5,0.));
   gl_FragData[1] = vec4(refc,1.);//texture2D(colortex1,tc*.5+vec2(.5,0.));

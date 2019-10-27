@@ -14,6 +14,8 @@ uniform sampler2D colortex4;
 uniform sampler2D colortex5;
 
 uniform int worldTime;
+uniform vec3 skyColor;
+uniform float rainStrength;
 
 
 #define TEMPORAL_LIGHT_ACCUMULATION
@@ -51,6 +53,7 @@ vec3 filt(vec2 tc, sampler2D s){
 
 /*DRAWBUFFERS:154*/
 void main() {
+  #include "lib/thunder.glsl"
 
   vec2 lmcoord=texture2D(colortex7,tc).rg;
 
@@ -59,10 +62,11 @@ void main() {
 
   vec3 naosh =  texture2D(colortex1, tc).rgb;
   float ao =naosh.x;
+  vec3 boltc = bolt*ao*lmcoord.y*vec3(.1,.01,.4);
   #include "lib/ambcol.glsl"
   ao*=.1+lmcoord.y*ambi;
   #ifdef GLOBAL_ILLUMINATION
-        vec3 newgi =  filt(tc,colortex4)+ambientCol*ao;
+        vec3 newgi =  filt(tc,colortex4)+ambientCol*ao+boltc;
   #else
         vec3 newgi = ambientCol*ao;
   #endif
