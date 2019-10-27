@@ -86,7 +86,7 @@ float clf(vec3 p, float c){
   highbound=sqrt(highbound);
     c*= lowbound*highbound
     *max(smoothstep(0.6,0.3,vnoise(0.00001*(p.xz-vec2(worldtime)*5.))),max(rainStrength,wetness));
-    return smoothstep(.1,.3,c+.7*rainStrength);
+    return smoothstep(.1,.3,c+.7*max(rainStrength,wetness*wetness*wetness*wetness));
 }
 
 
