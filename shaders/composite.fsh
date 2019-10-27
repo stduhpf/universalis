@@ -69,7 +69,7 @@ vec3 trace(vec3 ro,vec3 rd,vec2 I,vec3 ld,float dpt){
         extinct*=(vp);
         lightness = mix(shad(p,ld,d),lightness,vp);
     }
-	return vec3(1.-(1.-extinct)*exp2(-h*.0002),lightness,extinct);
+	return vec3(1.-(1.-extinct)*exp2(-h*.00015),lightness,extinct);
 }
 
 #define CLOUD_VL_QUALITY 4.0 //[1.0 2.0 4.0 8.0 16.0 32.0 64.0 128.0]
