@@ -171,7 +171,7 @@ void main(){
     float rayl = .2+.8*saturate(mix(dot(normalize(rd),lightDir),1.,.3));
     vec3 fogColor = vec3(.05,.06,.1);
     #ifdef VOLUMETRIC_LIGHT
-    c=volumeLight(c,rd*(1.-.9*step(1.,pd)));
+    c=volumeLight(c,rd);
     //fogColor = vol.rgb;
     #else
     float vol=1.;
