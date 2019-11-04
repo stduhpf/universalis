@@ -123,8 +123,7 @@ vec3 rsm(float pixdpth,vec3 normal,vec3 pbr){
     vec2 sc = r*angle+sp.xy;
 
     vec2 sc2 = stransform2(sc)*.5+.5;
-    vec3 ssv = sclip2view(vec3(sc,stransformd(texture2D(shadowtex1,sc2).r*2.-1.)));
-    vec3 ssp = sview2cam(ssv);
+    vec3 ssp = sclip2cam(vec3(sc,stransformd(texture2D(shadowtex1,sc2).r*2.-1.)));
 
     float weight = sqrt(r);
     sweight+=weight;
@@ -134,15 +133,16 @@ vec3 rsm(float pixdpth,vec3 normal,vec3 pbr){
 
 
     dep=normalize(dep);
-    vec3 sn = scamdir(normalize(texture2D(shadowcolor1,sc2).rgb*2.-1.));
+    vec3 snv = normalize(texture2D(shadowcolor1,sc2).rgb*2.-1.);
+    vec3 sn = scamdir(snv);
     #ifdef OREN_NAYAR_DIFFUSE
-    a+=weight*texture2D(shadowcolor0,sc2).rgb*(-ssv.z)*max(0,diffuse(-normalize(view),-dep,normal,rough))*max(0,dot(sn,dep))/(ld);
+    a+=weight*texture2D(shadowcolor0,sc2).rgb*max(0.,snv.z)*max(0,diffuse(-normalize(view),-dep,normal,rough))*max(0,dot(sn,dep))/(ld);
     #else
-    a+=weight*texture2D(shadowcolor0,sc2).rgb*(-ssv.z)*max(0,dot(normal,-dep))*max(0,dot(sn,dep))/(ld);
+    a+=weight*texture2D(shadowcolor0,sc2).rgb*max(0.,snv.z)*max(0,dot(normal,-dep))*max(0,dot(sn,dep))/(ld);
     #endif
   }
   #include "lib/lightcol.glsl"
-	return lightCol*a*300.*RSM_DIST*RSM_DIST*inte/sweight;
+	return lightCol*a*30000.*RSM_DIST*RSM_DIST*inte/sweight;
 }
 #endif
 vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh,vec3 rd,vec3 n){
