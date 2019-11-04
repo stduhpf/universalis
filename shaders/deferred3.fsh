@@ -1,4 +1,4 @@
-#version 120
+#version 130
 #include "lib/trans.glsl"
 #include "lib/essentials.glsl"
 #include "lib/shadowtransform.glsl"
@@ -30,10 +30,13 @@ varying vec2 tc;
 
 #define AO_SAMPLES 2    //[1 2 4 8 12 16]  //samples per pixelper frame
 #define AO_RADIUS .45   //[.1 .15 .2 .25 .3 .35 .4 .45 .5 .55 .6 .65 .7 .75 .8 .85 .9 .95 1. 1.25 1.5 1.75 2. 3. ]radius in m*pixel/screenwidthh
+
 const float autorad = float(AO_RADIUS)*.715/sqrt(float(AO_SAMPLES+1)); //.715 is empirical
 
 
 #define GI_SAMPLES 4  //[1 2 4 8 12 16 32 64 128]
+#define GI_DITHER_SCALE 2  //[1 2 3 4 5 6 7 8]
+#define RSM_DIST .1 //[.01 .015 .02 .025 .05 .075 .1 .2 .3 .4 .5 .6 .7 .8 .9 1.]
 
 
 #define AMBIENT_OCCLUSION
@@ -97,40 +100,49 @@ float diffuse(vec3 v, vec3 l, vec3 n, float r) {
 #ifdef GLOBAL_ILLUMINATION
 
 vec3 rsm(float pixdpth,vec3 normal,vec3 pbr){
-  normal = (camdir(normal));
+  normal = camdir(normal);
   vec3 view = screen2view(vec3(tc,pixdpth));
   vec3 p = view2cam(view);
   vec3 sp = scam2clip(p);
   const float inte = 128.*128/(shadowDistance*shadowDistance);
-  const float size = .05;
+  float dither = bayer64(gl_FragCoord.xy/GI_DITHER_SCALE+frameCounter%GI_DITHER_SCALE);
 
   vec3 a = vec3(0);
-  vec2 angle = vec2(0,size/sqrt(float(GI_SAMPLES+1)));
-  float seq = float(frameCounter)/17.;
-  angle*=rot((dither+sign(dither)*10*seq)*6.28318530718);
-  float r = 1.+fract(.5+dither-sign(dither)*24*seq);
+  float anglev = dither*TAU+frameCounter*GA;
+  vec2 angle = vec2(cos(anglev),sin(anglev));
+  float rstep = RSM_DIST/float(GI_SAMPLES);
+  float r = rstep*fract(15.*dither+frameCounter*TAU);
   #ifdef OREN_NAYAR_DIFFUSE
     float rough = (1.-pbr.r);
     rough*=rough;
   #endif
+  float sweight = 0.;
   for(int i = 0;i<GI_SAMPLES;i++){
-    r+=1./r;
+    r+=rstep;
     angle *= Grot;
-    vec2 sc = (r-1.)*angle+sp.xy;
+    vec2 sc = r*angle+sp.xy;
+
     vec2 sc2 = stransform2(sc)*.5+.5;
-    vec3 ssp = sclip2cam(vec3(sc,stransformd(texture2D(shadowtex1,sc2).r*2.-1.)));
+    vec3 ssv = sclip2view(vec3(sc,stransformd(texture2D(shadowtex1,sc2).r*2.-1.)));
+    vec3 ssp = sview2cam(ssv);
+
+    float weight = sqrt(r);
+    sweight+=weight;
+
     vec3 dep = (p-ssp);
     float ld = dot(dep,dep)*inte;
+
+
     dep=normalize(dep);
-    vec3 sn = (scamdir(normalize(texture2D(shadowcolor1,sc2).rgb*2.-1.)));
+    vec3 sn = scamdir(normalize(texture2D(shadowcolor1,sc2).rgb*2.-1.));
     #ifdef OREN_NAYAR_DIFFUSE
-    a+=texture2D(shadowcolor0,sc2).rgb*max(0,diffuse(-normalize(view),-dep,normal,rough))*max(0,dot(sn,dep))/(ld);
+    a+=weight*texture2D(shadowcolor0,sc2).rgb*(-ssv.z)*max(0,diffuse(-normalize(view),-dep,normal,rough))*max(0,dot(sn,dep))/(ld);
     #else
-    a+=texture2D(shadowcolor0,sc2).rgb*max(0,dot(normal,-dep))*max(0,dot(sn,dep))/(ld);
+    a+=weight*texture2D(shadowcolor0,sc2).rgb*(-ssv.z)*max(0,dot(normal,-dep))*max(0,dot(sn,dep))/(ld);
     #endif
   }
   #include "lib/lightcol.glsl"
-	return lightCol*a*100000.*size*size/float(GI_SAMPLES);
+	return lightCol*a*300.*RSM_DIST*RSM_DIST*inte/sweight;
 }
 #endif
 vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh,vec3 rd,vec3 n){
@@ -192,7 +204,7 @@ void main(){
   //csh = 1.;
   if(pixdpth<1.){
     #ifdef AMBIENT_OCCLUSION
-      ao *= ssao(pixdpth,normal);
+      ao *= ssao(pixdpth,normal) ;
     #endif
     sh =  shadow(pixdpth)*texture2D(gdepth,tc).g*csh;
     #ifdef GLOBAL_ILLUMINATION
