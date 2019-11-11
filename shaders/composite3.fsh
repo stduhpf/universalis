@@ -64,8 +64,6 @@ vec3 lc=vec3(0.);
 const mat2 Grot = mat2(cos(GA),sin(GA),-sin(GA),cos(GA));
 #include "lib/shadow.glsl"*
 
-const bool colortex0MipmapEnabled = true;
-
 
 bool isout=false;
 float outsideness = 0.;
@@ -134,7 +132,7 @@ vec3 ssr(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough, float fresnel,fl
         #ifdef SSR_REJECTION
         if(p.z-depth-.001<abs(stepl*d.z)&&depth<1.){
           nohit = false;
-          ret = texture2DLod(colortex0,p.xy,int(rough*40.)).rgb*2.;
+          ret = texture2D(colortex0,p.xy).rgb*2.;
           float m  = texture2D(colortex3,p.xy).g;
           #ifdef USE_METALS
           if(m>.9)
