@@ -62,7 +62,10 @@ vec3 lc=vec3(0.);
 //#define shadowtex1 shadowtex0
 #define GA 2.39996322973
 const mat2 Grot = mat2(cos(GA),sin(GA),-sin(GA),cos(GA));
-#include "lib/shadow.glsl"
+#include "lib/shadow.glsl"*
+
+const bool colortex0MipmapEnabled = true;
+
 
 bool isout=false;
 float outsideness = 0.;
@@ -131,7 +134,7 @@ vec3 ssr(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough, float fresnel,fl
         #ifdef SSR_REJECTION
         if(p.z-depth-.001<abs(stepl*d.z)&&depth<1.){
           nohit = false;
-          ret = texture2D(colortex0,p.xy).rgb*2.;
+          ret = texture2DLod(colortex0,p.xy,int(rough*40.)).rgb*2.;
           float m  = texture2D(colortex3,p.xy).g;
           #ifdef USE_METALS
           if(m>.9)
@@ -206,13 +209,15 @@ mat3 gettbn(vec3 nor){
     return mat3(uu,vv,nor);
 }
 
-vec3 cosineDirection( in vec3 nor,float r, vec2 fc)
+vec3 cosineDirection( in vec3 nor,float r, vec2 fc, int it)
 {
-	 float seed= dither*16.;//+frameTimeCounter*120.1;
+	 float seed= dither8(fc);//+frameTimeCounter*120.1;
     mat3 tbn = gettbn(nor);
 
-    float u = r*hash13(vec3(fc, 78.233) + seed);
-    float v = TAU*hash13( vec3(fc,10.873 )+ seed);
+    float seqf = haltonSeq(13,it);
+
+    float u = r*fract(haltonSeq(5,frameCounter)+seed+seqf);//hash13(vec3(fc, 78.233) + seed);
+    float v = TAU*fract(haltonSeq(7,frameCounter+12+int(seed*16.))-seqf);//hash13( vec3(fc,10.873 )+ seed);
     return  normalize(tbn*vec3(sqrt(u)*vec2(cos(v),sin(v)) , sqrt(1.0-u)));
 }
 
@@ -226,7 +231,7 @@ vec3 ssrs(vec3 p, vec3 rd, float rough,float sh, float fresnel){
   //rq *=rq;
   for(int i=0;i<SSR_FILTER;i++){
 
-  vec3 n = cosineDirection(n,rq,gl_FragCoord.xy);
+  vec3 n = cosineDirection(n,rq,gl_FragCoord.xy,i);
 
   c+= ssr(p,rd,n,i,sh,rough,fresnel,highlight);
   }

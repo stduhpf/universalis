@@ -6,7 +6,6 @@ uniform sampler2D colortex4;
 uniform sampler2D colortex0;
 
 
-
 /*DRAWBUFFERS:0*/
 void main(){
   vec3 c = texture2D(colortex0,tc).rgb;

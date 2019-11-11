@@ -14,6 +14,7 @@ uniform sampler2D noisetex;
 uniform sampler2D colortex2;
 uniform sampler2D colortex3;
 uniform float frameTimeCounter;
+uniform int frameCounter;
 uniform int worldTime;
 uniform float rainStrength;
 uniform float wetness;
@@ -109,11 +110,11 @@ mat3 gettbn(vec3 nor){
 }
 vec3 cosineDirection( in vec3 nor,float r, vec2 fc)
 {
-	 float seed=frameTimeCounter*120.1;
+	 float seed= dither8(fc);//+frameTimeCounter*120.1;
     mat3 tbn = gettbn(nor);
 
-    float u = r*hash13(vec3(fc, 78.233) + seed);
-    float v = TAU*hash13( vec3(fc,10.873 )+ seed);
+    float u = r*fract(haltonSeq(5,frameCounter)+seed);//hash13(vec3(fc, 78.233) + seed);
+    float v = TAU*fract(haltonSeq(7,frameCounter+12+int(seed*16.)));//hash13( vec3(fc,10.873 )+ seed);
     return  normalize(tbn*vec3(sqrt(u)*vec2(cos(v),sin(v)) , sqrt(1.0-u)));
 }
 
