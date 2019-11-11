@@ -137,6 +137,61 @@ vec3 volumeLight(vec3 c,vec3 rd){
   }
   return c*m+trans+rba;
 }
+vec3 volumeLightSky(vec3 c,vec3 rd){
+
+  float rdDotUp = normalize(rd).y;
+  float powe = 1./(1.-rdDotUp*.8);
+
+  vec3 p0 = gbufferModelViewInverse[3].xyz;
+  vec3 st = (rd-p0)/float(VOL_STEPS);
+  vec3 shade =vec3(0.);
+  float rdlen = length(rd);
+  //p0+=st*fract(dither);
+  float stlen = length(st);
+
+
+  vec3 fogColor = vec3(.058,.063,.08)*(1.+length(lightcol));
+  float rayl = .7+.3*saturate(mix(dot(normalize(rd),lightDir),1.,.3));
+  rayl*=rayl;
+
+  float wetd = wetness*wetness;
+  wetd = wetd*wetd;
+  vec3 li = lightcol*lightcol;
+  vec3 rb = vec3(li.r,0,0)*smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.1));
+  rb = mix(rb,vec3(0,li.g,0),smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.125)));
+  rb = mix(rb,vec3(0,0,li.b),smoothstep(.04,.0,abs(dot(normalize(rd),lightDir)+.15)));
+  vec3 lc =lightcol;
+  vec3 rba = vec3(0);
+
+  float m = 1.;
+  vec3 trans = vec3(0);
+  float dist = stlen*fract(dither);
+  vec3 stn = normalize(st);
+  float lpd = 0.;
+  for(int i=0;i<VOL_STEPS;i++){
+    float pdist = pow(dist/rdlen,powe)*rdlen;
+
+    vec3 p = p0+stn*pdist;
+    float postlen = abs(lpd-pdist);
+    vec4 n = texture2D(noisetex,(p.xz+cameraPosition.xz- frameTimeCounter)*.0001);
+    float density=(.05*n.r*n.r+.05*wetd)*exp2(-abs(p.y+cameraPosition.y-62.)*(.1+.3*sqrt(n.g)*(1.-.9*wetness)));
+    float den = density*postlen;
+    float l = shadow2(p)*getCloudShadow(p);
+      shade=mix(fogColor,lc,rayl*l);
+
+      float ext= exp2(-den);
+      trans+=m*shade*(1.-ext);
+      m*=ext;
+      if(m<.01){
+        break;
+      }
+      //c=mix(shade,c,ext);
+      rba +=rb*(.2+.3*wetness)*l*rayl*rayl*(1.-ext);
+      lpd = pdist;
+      dist+=stlen;
+  }
+  return (c*m+trans+rba);
+}
 
 #endif
 
@@ -181,7 +236,7 @@ void main(){
     float rayl = .2+.8*saturate(mix(dot(normalize(rd),lightDir),1.,.3));
     vec3 fogColor = vec3(.05,.06,.1);
     #ifdef VOLUMETRIC_LIGHT
-    c=volumeLight(c,rd);
+    c=pd<1.?volumeLight(c,rd):volumeLightSky(c,rd);
     //fogColor = vol.rgb;
     #else
     float vol=1.;
