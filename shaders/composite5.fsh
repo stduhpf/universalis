@@ -139,7 +139,7 @@ vec3 volumeLight(vec3 c,vec3 rd){
 }
 vec3 volumeLightSky(vec3 c,vec3 rd){
 
-  float rdDotUp = normalize(rd).y;
+  float rdDotUp = abs(normalize(rd).y);
   float powe = 1./(1.-rdDotUp*.8);
 
   vec3 p0 = gbufferModelViewInverse[3].xyz;

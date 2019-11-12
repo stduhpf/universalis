@@ -302,7 +302,7 @@ float stlen = length(st);
 
 vec3 volumeLightSky(vec3 c,vec3 rd,vec3 p0){
 
-  float rdDotUp = normalize(rd).y;
+  float rdDotUp = abs(normalize(rd).y);
   float powe = 1./(1.-rdDotUp*.8);
 
 
