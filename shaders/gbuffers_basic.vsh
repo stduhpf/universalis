@@ -19,7 +19,7 @@ uniform int frameCounter;
 
 void main()
 {
-	vec2 offset = 0.*vec2(haltonSeq(5,frameCounter),haltonSeq(7,frameCounter+12));
+	vec2 offset = vec2(haltonSeq(5,frameCounter),haltonSeq(7,frameCounter+12));
 	gl_Position = ftransform();
 	gl_Position.xy += (offset-.5)*gl_Position.w/resolution;
 	normal= normalize(gl_NormalMatrix*gl_Normal);
