@@ -406,7 +406,7 @@ void main(){
     fresnel=1.;
     else
   #endif
-    fresnel = ((1.0 - f0) * pow(1.0 - clamp(dot(-rd, n), 0.0, 1.0), 5.0)*(pbr.r*pbr.r) + f0);
+    fresnel = ((1.0 - f0) * pow(1.0 - clamp(dot(-rd, n), 0.0, 1.0), 5.0)*(pbr.r) + f0);
   //fresnel=1.;
 
   float depth = depthBlock(pd);
