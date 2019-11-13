@@ -16,9 +16,9 @@ uniform sampler2D normals;
 uniform sampler2D specular;
 #endif
 uniform sampler2D noisetex;
-#include "lib/colorspace.glsl"
-#include "lib/trans.glsl"
-#include "lib/essentials.glsl"
+#include "../lib/colorspace.glsl"
+#include "../lib/trans.glsl"
+#include "../lib/essentials.glsl"
 
 varying vec3 normal;
 varying vec4 texcoord;
@@ -33,9 +33,6 @@ uniform int frameCounter;
 varying vec3 wpos;
 
 const int noiseTextureResolution = 256;
-
-uniform float wetness;
-uniform float rainStrength;
 
 varying vec2 texres;
 #define tt texres // vec2(max(texres.x,texres.y))
@@ -121,7 +118,7 @@ void main()
 	vec3 n = normal, nrml=normal;
 
 #ifdef NORMAL_MAPPING
-vec4 nmp = gettex(normals,uv);
+	vec4 nmp = gettex(normals,uv);
 	vec3 nm = nmp.rgb*2.-1.;
 	float ao = length(nm);
 //	vec2 tb = (nm/ao).xy;
@@ -142,10 +139,6 @@ vec4 nmp = gettex(normals,uv);
 	gl_FragData[4].r=(ao);
 	//gl_FragData[0].rgb = vec3(ao*ao);
 
-if(puddle>=nmp.a){
-	n=nrml;
-	//PBRdata.xyz=vec3(.9,.134,0.);
-}
 
 #endif
   gl_FragData[2]=vec4(.5+.5*n,1.);

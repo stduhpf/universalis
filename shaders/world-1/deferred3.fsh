@@ -97,54 +97,7 @@ float diffuse(vec3 v, vec3 l, vec3 n, float r) {
 #endif
 
 
-#ifdef GLOBAL_ILLUMINATION
 
-vec3 rsm(float pixdpth,vec3 normal,vec3 pbr){
-  normal = camdir(normal);
-  vec3 view = screen2view(vec3(tc,pixdpth));
-  vec3 p = view2cam(view);
-  vec3 sp = scam2clip(p);
-  const float inte = 128.*128/(shadowDistance*shadowDistance);
-  float dither = bayer64(gl_FragCoord.xy/GI_DITHER_SCALE+frameCounter%GI_DITHER_SCALE);
-
-  vec3 a = vec3(0);
-  float anglev = dither*TAU+frameCounter*GA;
-  vec2 angle = vec2(cos(anglev),sin(anglev));
-  float rstep = RSM_DIST/float(GI_SAMPLES);
-  float r = rstep*fract(15.*dither+frameCounter*TAU);
-  #ifdef OREN_NAYAR_DIFFUSE
-    float rough = (1.-pbr.r);
-    rough*=rough;
-  #endif
-  float sweight = 0.;
-  for(int i = 0;i<GI_SAMPLES;i++){
-    r+=rstep;
-    angle *= Grot;
-    vec2 sc = r*angle+sp.xy;
-
-    vec2 sc2 = stransform2(sc)*.5+.5;
-    vec3 ssp = sclip2cam(vec3(sc,stransformd(texture2D(shadowtex1,sc2).r*2.-1.)));
-
-    float weight = sqrt(r);
-    sweight+=weight;
-
-    vec3 dep = (p-ssp);
-    float ld = dot(dep,dep)*inte;
-
-
-    dep=normalize(dep);
-    vec3 snv = normalize(texture2D(shadowcolor1,sc2).rgb*2.-1.);
-    vec3 sn = scamdir(snv);
-    #ifdef OREN_NAYAR_DIFFUSE
-    a+=weight*texture2D(shadowcolor0,sc2).rgb*max(0.,snv.z)*max(0,diffuse(-normalize(view),-dep,normal,rough))*max(0,dot(sn,dep))/(ld);
-    #else
-    a+=weight*texture2D(shadowcolor0,sc2).rgb*max(0.,snv.z)*max(0,dot(normal,-dep))*max(0,dot(sn,dep))/(ld);
-    #endif
-  }
-  #include "../lib/lightcol.glsl"
-	return lightCol*a*30000.*RSM_DIST*RSM_DIST*inte/sweight;
-}
-#endif
 vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh,vec3 rd,vec3 n){
   #include "../lib/lightcol.glsl"
   #ifdef OREN_NAYAR_DIFFUSE
@@ -199,27 +152,19 @@ void main(){
     col.rgb = mix(col.rgb, getSky(rd,0.), k);*/
     col.rgb = getSky(camdir(rd),0.);
   }
-  float ao=r,sh=1.;
-  float csh = texture2D(colortex4,tc*.5).r;
+  float ao=r;
   //csh = 1.;
   if(pixdpth<1.){
     #ifdef AMBIENT_OCCLUSION
       ao *= ssao(pixdpth,normal) ;
     #endif
-    sh =  shadow(pixdpth)*texture2D(gdepth,tc).g*csh;
-    #ifdef GLOBAL_ILLUMINATION
-      vec3 gi = rsm(pixdpth,normal,pbr);
-      gi+=colorshadow(pixdpth,pbr,sh,rd,normal);
-      gi*=csh;
-      gl_FragData[2] = vec4(gi,1.);
-    #else
-      gl_FragData[2] = vec4(0.,0.,0.,1.);
-    #endif
+    gl_FragData[2] = vec4(0.,0.,0.,1.);
+
   }else{
     gl_FragData[2] = vec4(0,0,0,1.);
   }
 
   col.rgb*=.5;
   gl_FragData[0] = col;
-  gl_FragData[1] = vec4(ao,sh,r,1);
+  gl_FragData[1] = vec4(ao,0.,r,1);
 }
