@@ -1,8 +1,8 @@
 #version 130
-#include "lib/trans.glsl"
-#include "lib/essentials.glsl"
-#include "lib/shadowtransform.glsl"
-#include "lib/sky.glsl"
+#include "../lib/trans.glsl"
+#include "../lib/essentials.glsl"
+#include "../lib/shadowtransform.glsl"
+#include "../lib/sky.glsl"
 
 
 uniform sampler2D gcolor;
@@ -72,7 +72,7 @@ float ssao(float pixdpth, vec3 n){
 }
 #endif
 
-#include "lib/shadow.glsl"
+#include "../lib/shadow.glsl"
 
 #define OREN_NAYAR_DIFFUSE
 
@@ -141,12 +141,12 @@ vec3 rsm(float pixdpth,vec3 normal,vec3 pbr){
     a+=weight*texture2D(shadowcolor0,sc2).rgb*max(0.,snv.z)*max(0,dot(normal,-dep))*max(0,dot(sn,dep))/(ld);
     #endif
   }
-  #include "lib/lightcol.glsl"
+  #include "../lib/lightcol.glsl"
 	return lightCol*a*30000.*RSM_DIST*RSM_DIST*inte/sweight;
 }
 #endif
 vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh,vec3 rd,vec3 n){
-  #include "lib/lightcol.glsl"
+  #include "../lib/lightcol.glsl"
   #ifdef OREN_NAYAR_DIFFUSE
     float rough = (1.-pbr.r);
     rough*=rough;

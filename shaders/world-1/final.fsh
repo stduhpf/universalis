@@ -1,9 +1,9 @@
 #version 400
 
-#include "lib/colorspace.glsl"
-#include "lib/essentials.glsl"
-#include "lib/bloom.glsl"
-#include "lib/temp.glsl"
+#include "../lib/colorspace.glsl"
+#include "../lib/essentials.glsl"
+#include "../lib/bloom.glsl"
+#include "../lib/temp.glsl"
 
 
 // temporal buffers: 5 6, don't touch

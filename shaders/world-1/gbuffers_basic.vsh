@@ -13,7 +13,7 @@ attribute vec4 at_tangent;
 
 uniform int frameCounter;
 
-#include "lib/essentials.glsl"
+#include "../lib/essentials.glsl"
 
 
 

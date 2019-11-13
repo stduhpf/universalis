@@ -1,6 +1,6 @@
 #version 120
-#include "lib/essentials.glsl"
-#include "lib/trans.glsl"
+#include "../lib/essentials.glsl"
+#include "../lib/trans.glsl"
 
 varying vec2 tc;
 //uniform sampler2D colortex0;

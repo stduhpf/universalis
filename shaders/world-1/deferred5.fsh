@@ -2,9 +2,9 @@
 
 const bool colortex5Clear = false;
 
-#include "lib/trans.glsl"
-#include "lib/essentials.glsl"
-#include "lib/temp.glsl"
+#include "../lib/trans.glsl"
+#include "../lib/essentials.glsl"
+#include "../lib/temp.glsl"
 
 uniform sampler2D colortex0;
 uniform sampler2D colortex1;
@@ -48,12 +48,12 @@ vec3 filt(vec2 tc, sampler2D s){
 }
 #endif
 
-#include "lib/lmcol.glsl"
+#include "../lib/lmcol.glsl"
 
 
 /*DRAWBUFFERS:154*/
 void main() {
-  #include "lib/thunder.glsl"
+  #include "../lib/thunder.glsl"
 
   vec2 lmcoord=texture2D(colortex7,tc).rg;
 
@@ -63,7 +63,7 @@ void main() {
   vec3 naosh =  texture2D(colortex1, tc).rgb;
   float ao =naosh.x;
   vec3 boltc = bolt*ao*lmcoord.y*vec3(.1,.01,.4);
-  #include "lib/ambcol.glsl"
+  #include "../lib/ambcol.glsl"
   ao*=.1+lmcoord.y*ambi;
   #ifdef GLOBAL_ILLUMINATION
         vec3 newgi =  filt(tc,colortex4)+ambientCol*ao+boltc;

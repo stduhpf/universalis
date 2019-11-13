@@ -2,7 +2,7 @@
 
 uniform sampler2D texture;
 
-#include "lib/colorspace.glsl"
+#include "../lib/colorspace.glsl"
 
 varying vec4 texcoord;
 varying vec4 tintColor;

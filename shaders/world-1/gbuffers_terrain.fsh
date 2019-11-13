@@ -16,9 +16,9 @@ uniform sampler2D normals;
 uniform sampler2D specular;
 #endif
 uniform sampler2D noisetex;
-#include "lib/colorspace.glsl"
-#include "lib/trans.glsl"
-#include "lib/essentials.glsl"
+#include "../lib/colorspace.glsl"
+#include "../lib/trans.glsl"
+#include "../lib/essentials.glsl"
 
 varying vec3 normal;
 varying vec4 texcoord;

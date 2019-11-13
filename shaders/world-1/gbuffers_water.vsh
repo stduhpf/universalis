@@ -22,7 +22,7 @@ attribute vec2 mc_midTexCoord;
 attribute vec2 mc_Entity;
 
 
-#include "lib/essentials.glsl"
+#include "../lib/essentials.glsl"
 
 
 void main()

@@ -5,7 +5,7 @@ varying vec4 tintColor;
 
 uniform int frameCounter;
 
-#include "lib/essentials.glsl"
+#include "../lib/essentials.glsl"
 
 
 

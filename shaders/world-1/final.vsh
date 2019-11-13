@@ -4,7 +4,7 @@ varying vec2 tc;
 varying float avgexp;
 uniform sampler2D colortex0;
 uniform int frameCounter;
-#include "lib/essentials.glsl"
+#include "../lib/essentials.glsl"
 
 
 #define AVGEXPS 50.

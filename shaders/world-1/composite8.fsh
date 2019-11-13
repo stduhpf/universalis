@@ -1,8 +1,8 @@
 #version 120
 
 
-#include "lib/essentials.glsl"
-#include "lib/bloom.glsl"
+#include "../lib/essentials.glsl"
+#include "../lib/bloom.glsl"
 
 varying vec2 tc;
 uniform sampler2D colortex7;

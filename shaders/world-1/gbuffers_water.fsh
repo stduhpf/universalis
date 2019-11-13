@@ -4,8 +4,8 @@
 uniform sampler2D texture;
 uniform sampler2D normals;
 uniform sampler2D specular;
-#include "lib/colorspace.glsl"
-#include "lib/trans.glsl"
+#include "../lib/colorspace.glsl"
+#include "../lib/trans.glsl"
 #define NORMAL_MAPPING
 #define POM
 #define SELF_SHADOW
@@ -244,12 +244,12 @@ uniform int worldTime;
 	    return max(0., cti);
 	}
 	#endif
-	#include "lib/essentials.glsl"
+	#include "../lib/essentials.glsl"
 	uniform sampler2D shadowtex1;
-	#include "lib/shadowtransform.glsl"
+	#include "../lib/shadowtransform.glsl"
 
-	#include "lib/shadow_lite.glsl"
-	#include "lib/lmcol.glsl"
+	#include "../lib/shadow_lite.glsl"
+	#include "../lib/lmcol.glsl"
 
 //}
 
@@ -258,7 +258,7 @@ uniform int worldTime;
 /*DRAWBUFFERS:01237*/
 void main()
 {
-  #include "lib/lightcol.glsl"
+  #include "../lib/lightcol.glsl"
 
   bool iswater = ((floor(entity+.1)==9.)||floor(entity+.1)==8.);
 	vec2 lm = lmcoord.xy/256.;
@@ -320,7 +320,7 @@ void main()
 
 //gl_FragData[0]=vec4(PBRdata.rgb,1.);
 
-		#include "lib/ambcol.glsl"
+		#include "../lib/ambcol.glsl"
 
 		gl_FragData[0].rgb*=mix(vec3(1.),diffuse(normalize(vpos),normalize(shadowLightPosition),n,pow(1.-PBRdata.r,2.))*lightCol*shadow3(world2cam(p))+ambientCol*lm.y*ambi+TorchColor*lm.x,gl_FragData[0].a);
 		gl_FragData[1]=vec4(1,0.,1.,1.);

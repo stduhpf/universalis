@@ -1,7 +1,7 @@
 #version 120
-#include "lib/essentials.glsl"
-#include "lib/shadowtransform.glsl"
-#include "lib/trans.glsl"
+#include "../lib/essentials.glsl"
+#include "../lib/shadowtransform.glsl"
+#include "../lib/trans.glsl"
 
 uniform vec3 shadowLightPosition;
 
@@ -33,14 +33,14 @@ uniform float rainStrength;
 uniform int worldTime;
 
 
-#include "lib/lmcol.glsl"
-#include "lib/clouds.set"
+#include "../lib/lmcol.glsl"
+#include "../lib/clouds.set"
 
 vec3 lc=vec3(0.);
 
 #define GA 2.39996322973
 const mat2 Grot = mat2(cos(GA),sin(GA),-sin(GA),cos(GA));
-#include "lib/shadow.glsl"
+#include "../lib/shadow.glsl"
 
 
 vec3 lightDir,lightcol;
@@ -197,7 +197,7 @@ vec3 volumeLightSky(vec3 c,vec3 rd){
 
 /*DRAWBUFFERS:0*/
 void main(){
-  #include "lib/lightcol.glsl"
+  #include "../lib/lightcol.glsl"
   lightDir=lightdir,lightcol=lightCol;
   vec3 c = texture2D(colortex0,tc).rgb;
   float pd = texture2D(depthtex0,tc).r;

@@ -1,8 +1,8 @@
 #version 120
-#include "lib/essentials.glsl"
-#include "lib/shadowtransform.glsl"
-#include "lib/trans.glsl"
-#include "lib/sky.glsl"
+#include "../lib/essentials.glsl"
+#include "../lib/shadowtransform.glsl"
+#include "../lib/trans.glsl"
+#include "../lib/sky.glsl"
 
 
 
@@ -39,9 +39,9 @@ uniform vec3 skyColor;
 uniform int worldTime;
 
 
-#include "lib/ambcol.glsl"
-#include "lib/lmcol.glsl"
-#include "lib/clouds.set"
+#include "../lib/ambcol.glsl"
+#include "../lib/lmcol.glsl"
+#include "../lib/clouds.set"
 
 vec3 lc=vec3(0.);
 
@@ -62,7 +62,7 @@ vec3 lc=vec3(0.);
 //#define shadowtex1 shadowtex0
 #define GA 2.39996322973
 const mat2 Grot = mat2(cos(GA),sin(GA),-sin(GA),cos(GA));
-#include "lib/shadow.glsl"*
+#include "../lib/shadow.glsl"*
 
 
 bool isout=false;
@@ -360,10 +360,10 @@ vec3 volumeLightSky(vec3 c,vec3 rd,vec3 p0){
 
 /*DRAWBUFFERS:04*/
 void main(){
-  #include "lib/lightcol.glsl"
+  #include "../lib/lightcol.glsl"
   lightDir=lightdir,lightcol=lightCol;
 
-  #include "lib/thunder.glsl"
+  #include "../lib/thunder.glsl"
   vec3 c = texture2D(colortex0,tc).rgb;
   vec3 refc = vec3(0);
   outsideness = smoothstep(.6,1.,texture2D(colortex7,tc).g);

@@ -1,6 +1,6 @@
 #version 120
-#include "lib/essentials.glsl"
-#include "lib/trans.glsl"
+#include "../lib/essentials.glsl"
+#include "../lib/trans.glsl"
 
 varying vec2 tc;
 uniform sampler2D colortex7;
@@ -45,7 +45,7 @@ float diffuse(vec3 v, vec3 l, vec3 n, float r) {
 
 /*DRAWBUFFERS:07*/
 void main(){
-  #include "lib/lightcol.glsl"
+  #include "../lib/lightcol.glsl"
   vec3 normal = texture2D(gnormal,tc).rgb*2.-1.;
   vec3 gi = texture2D(colortex4,tc).rgb;
   vec3 lme =  texture2D(colortex7,tc).rgb;
