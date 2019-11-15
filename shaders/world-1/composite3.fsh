@@ -1,8 +1,6 @@
 #version 120
-#include "../lib/essentials.glsl"
-#include "../lib/shadowtransform.glsl"
-#include "../lib/trans.glsl"
-#include "../lib/sky.glsl"
+#include "/lib/essentials.glsl"
+#include "/lib/trans.glsl"
 
 
 
@@ -39,13 +37,11 @@ uniform vec3 skyColor;
 uniform int worldTime;
 
 
-#include "../lib/ambcol.glsl"
-#include "../lib/lmcol.glsl"
+#include "/lib/ambcol.glsl"
+#include "/lib/lmcol.glsl"
 
-vec3 lc=vec3(0.);
 
 #define SSR
-#define SHADOW_SPACE_REFLECTION
 
 
 #define SSR_STEPS 8 //[4 8 12 16 24 32 64]$
@@ -54,9 +50,6 @@ vec3 lc=vec3(0.);
 
 #define SSR_MIN_PREC .05 //[.02 .03 .04 .05 .06 .07 .08 .1 .2]
 
-#define SHSR_STEPS 8 //[4 8 12 16 24 32 64]
-#define SHSR_PREC .4 //[.05 .1 .15 .2 .25 .3 .35 .4 .45 .5 .55]
-#define SHSR_PREC_BIAS .2 //[.01 .02 .03 .04 .05 .06 .07 .08 .09 .1 .11 .12 .13 .14 .15 .16 .17 .18 .19 .2 .22 .24 .26 .28 .3 .35 .4 .5 1.]
 
 //#define shadowtex1 shadowtex0
 #define GA 2.39996322973
@@ -66,22 +59,14 @@ const mat2 Grot = mat2(cos(GA),sin(GA),-sin(GA),cos(GA));
 bool isout=false;
 float outsideness = 0.;
 
-vec3 lightDir,lightcol;
 
 #define USE_METALS
 
-float brdflight(vec3 n, vec3 v, vec3 l,float r){
 
-  r+=.0025;
-  float d = max(dot(n,normalize(v+l)),0.);
-  d*=d;
-  float a = .5*r/(d*r*r+1.-d);
-  return a*a/PI;
-}
 
 vec3 ssr2(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough){
   rd = reflect(rd,n);
-  vec3 ret= getSky(camdir(rd),rough)*.5+dither*0.01;
+  vec3 ret=  vec3(.013,.005,.004);
   return ret;
 }
 
@@ -93,7 +78,7 @@ vec3 ssr(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough, float fresnel,fl
 
   int ITER =int(ceil(float(SSR_STEPS)*(1.-rough)));
 
-  vec3 ret= gi;
+  vec3 ret=gi;// min3(vec3(.013,.005,.004),gi);
  bool nohit = true;
  if(fresnel-.5*rough>.01){
    #ifdef SSR
@@ -180,14 +165,13 @@ vec3 cosineDirection( in vec3 nor,float r, vec2 fc, int it)
 vec3 ssrs(vec3 p, vec3 rd, float rough,float sh, float fresnel){
   vec3 c = vec3(0);
   vec3 n = normalize(texture2D(colortex2,tc).rgb*2.-1.);
-  float highlight = abs(brdflight(n,-rd,normalize(shadowLightPosition),rough));
   float rq = rough*rough;
   //rq *=rq;
   for(int i=0;i<SSR_FILTER;i++){
 
   vec3 n = cosineDirection(n,rq,gl_FragCoord.xy,i);
 
-  c+= ssr(p,rd,n,i,sh,rough,fresnel,highlight);
+  c+= ssr(p,rd,n,i,sh,rough,fresnel,.0);
   }
   return c/float(SSR_FILTER);
 }
@@ -196,10 +180,7 @@ vec3 ssrs(vec3 p, vec3 rd, float rough,float sh, float fresnel){
 
 /*DRAWBUFFERS:04*/
 void main(){
-  #include "../lib/lightcol.glsl"
-  lightDir=lightdir,lightcol=lightCol;
 
-  #include "../lib/thunder.glsl"
   vec3 c = texture2D(colortex0,tc).rgb;
   vec3 refc = vec3(0);
   outsideness = smoothstep(.6,1.,texture2D(colortex7,tc).g);
@@ -226,7 +207,6 @@ void main(){
   float sh = 0.;
 
 
-  lc = lightcol;
 
   vec3 rd = normalize(viewp);
   float roughness = (1 - pbr.r);

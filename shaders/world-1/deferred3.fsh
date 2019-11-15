@@ -1,8 +1,6 @@
 #version 130
 #include "../lib/trans.glsl"
 #include "../lib/essentials.glsl"
-#include "../lib/shadowtransform.glsl"
-#include "../lib/sky.glsl"
 
 
 uniform sampler2D gcolor;
@@ -72,63 +70,13 @@ float ssao(float pixdpth, vec3 n){
 }
 #endif
 
-#include "../lib/shadow.glsl"
-
-#define OREN_NAYAR_DIFFUSE
-
-
-#ifdef OREN_NAYAR_DIFFUSE
-
-float diffuse(vec3 v, vec3 l, vec3 n, float r) {
-    r *= r;
-
-    float cti = dot(n,l);
-    float ctr = dot(n,v);
-
-    float t = max(cti,ctr);
-    float g = max(.0, dot(v - n * ctr, l - n * cti));
-    float c = g/t - g*t;
-
-    float a = .285 / (r+.57) + .5;
-    float b = c * .45 * r / (r+.09);
-
-    return max(0., cti) * ( b + a);
-}
-#endif
 
 
 
-vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh,vec3 rd,vec3 n){
-  #include "../lib/lightcol.glsl"
-  #ifdef OREN_NAYAR_DIFFUSE
-    float rough = (1.-pbr.r);
-    rough*=rough;
-  #endif
-  vec3 scp = vec3(tc,pixdpth);
-  vec3 p = screen2cam(scp);
-  vec3 sp = stransformcam(scam2clip(p))*.5+.5;
-  sp.z-=.0001;
-  sp.z = sp.z-shadow_offset*(SHADOW_BIAS+length8(sp.xy));
-  float s =1.;
-  float i = smoothstep(sp.z-pbr.b*.015,sp.z,texture2D(shadowtex1,sp.xy).r);
-  vec3 col = texture2D(gcolor,tc.xy).rgb*((i>=1.)?0.:i*i)*lightCol;//sss
-  #ifdef COLORED_SHADOW
-  if(texture2D(shadowtex0,sp.xy).r<texture2D(shadowtex1,sp.xy).r && sh>0.){
-    #ifdef OREN_NAYAR_DIFFUSE
-    float i = diffuse(-rd,normalize(shadowLightPosition),n,rough);
-    #else
-    float i = saturate(dot(rd,normalize(shadowLightPosition)));
-    #endif
-    col+=sh*texture2D(shadowcolor0,sp.xy).rgb*lightCol*i*2.;
-    sh=0.;
-  }
-  #endif
-//  #ifdef PCSS
-//  return min(s,getSoftShadows(sp,max(getPenumbra(sp),1.41421356237/float(shadowMapResolution*MC_SHADOW_QUALITY)),pixdpth));
-//  #else
-  return col*2.;
-//  #endif
-}
+
+
+
+
 /*DRAWBUFFERS:014*/
 void main(){
   vec4 col = texture2D(gcolor,tc);
@@ -143,14 +91,8 @@ void main(){
 
   if(pixdpth>=1. ){
     r=1.;
-    /*col.rgb = texture2D(colortex4,tc/3.).rgb;
-    float maxrb = max( col.r, col.b );
-    float k = clamp( (col.g-maxrb)*5.0, 0.0, 1.0 );
-    float dg = col.g;
-    col.g = min( col.g, maxrb*0.8 );
-    col.rgb += dg - col.g;
-    col.rgb = mix(col.rgb, getSky(rd,0.), k);*/
-    col.rgb = getSky(camdir(rd),0.);
+
+    col.rgb = vec3(.013,.005,.004);
   }
   float ao=r;
   //csh = 1.;

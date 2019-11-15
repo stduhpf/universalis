@@ -33,30 +33,47 @@ uniform float rainStrength;
 uniform int worldTime;
 
 
-#include "../lib/lmcol.glsl"
-#include "../lib/clouds.set"
+#include "/lib/lmcol.glsl"
 
-vec3 lc=vec3(0.);
 
 #define GA 2.39996322973
 const mat2 Grot = mat2(cos(GA),sin(GA),-sin(GA),cos(GA));
-#include "../lib/shadow.glsl"
 
 
-vec3 lightDir,lightcol;
 
-#define USE_METALS
 
-float getCloudShadow(vec3 p)
-{
-  if(p.y>cloud_mid)
-    return 1.;
-  vec3 slp = normalize(view2cam(shadowLightPosition));
-  p-=slp*p.y/slp.y;
-  vec2 pc = ((p.xz+.5*resolution)/resolution);
-  return pc==fract(pc)?saturate(texture2D(colortex1,pc*.5+vec2(.5,0)).r):1.;
+vec3 hash33c(vec3 p3){
+    p3 = mod(p3+50.3,100.6)-50.3;
+	   p3 = fract(p3 * vec3(.1031, .1030, .0973));
+    p3 += dot(p3, p3.yxz+19.19);
+    return fract((p3.xxy + p3.yxx)*p3.zyx)-.5;
 }
 
+vec3 dephash(vec3 p){
+    return p+hash33c(p);
+}
+
+float worley(vec3 p){
+    vec3 P =floor(p);
+    vec3 p0 = dephash(P)
+        ,p1= dephash(P+vec3(0,0,1))
+        ,p2= dephash(P+vec3(0,1,0))
+        ,p3= dephash(P+vec3(0,1,1))
+        ,p4= dephash(P+vec3(1,0,0))
+        ,p5= dephash(P+vec3(1,0,1))
+        ,p6= dephash(P+vec3(1,1,0))
+        ,p7= dephash(P+vec3(1,1,1));
+    float d0 = distance(p,p0),
+          d1 = distance(p,p1),
+          d2 = distance(p,p2),
+          d3 = distance(p,p3),
+          d4 = distance(p,p4),
+          d5 = distance(p,p5),
+          d6 = distance(p,p6),
+          d7 = distance(p,p7);
+    float md = min(min(min(d0,d1),min(d2,d3)),min(min(d4,d5),min(d6,d7)));
+ return 1.-(md)*2.3;
+}
 
 float hash13(vec3 p3){
 	p3 = fract(p3 * vec3(.1031, .1030, .0973));
@@ -65,27 +82,6 @@ float hash13(vec3 p3){
 
 }
 
-
-#define WATER_VOL_STEPS 8 //[2 4 8 16 32]
-#define VOLUMETRIC_WATER
-
-#ifdef VOLUMETRIC_WATER
-vec3 volumeWater(vec3 p1, vec3 p2,float sh, vec3 c){
-  p1=screen2cam(p1),
-  p2=screen2cam(p2);
-  vec3 rd = p2-p1;
-  vec3 st = rd/float(WATER_VOL_STEPS+1);
-  float shade =sh;
-  float stlen = length(st);
-  p2=p2-st*(dither+1.);
-  for(int i=1;i<WATER_VOL_STEPS;i++){
-      shade+=shadow2(p2)*exp2(-distance(p1,p2)*WATER_THICCNESS*.01)*getCloudShadow(p2);
-      c=mix((.3*shade+.1)*vec3(.05,.07,.3)*lightcol,c,exp2(-stlen*WATER_THICCNESS));
-      p2-=st;
-  }
-  return c;
-}
-#endif
 
 #define VOL_STEPS 8 //[2 4 8 16 32]
 #define VOLUMETRIC_LIGHT
@@ -102,103 +98,36 @@ vec3 volumeLight(vec3 c,vec3 rd){
   float stlen = length(st);
 
 
-  vec3 fogColor = vec3(.058,.063,.08)*(1.+length(lightcol));
-  float rayl = .7+.3*saturate(mix(dot(normalize(rd),lightDir),1.,.3));
-  rayl*=rayl;
+  vec3 fogColor = vec3(.013,.005,.004);
 
-  float wetd = wetness*wetness;
-  wetd = wetd*wetd;
-  vec3 li = lightcol*lightcol;
-  vec3 rb = vec3(li.r,0,0)*smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.1));
-  rb = mix(rb,vec3(0,li.g,0),smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.125)));
-  rb = mix(rb,vec3(0,0,li.b),smoothstep(.04,.0,abs(dot(normalize(rd),lightDir)+.15)));
-  vec3 lc =lightcol;
-  vec3 rba = vec3(0);
+
+  vec3 lc = vec3(.3,.1,.1);
 
   float m = 1.;
   vec3 trans = vec3(0);
 
   for(int i=0;i<VOL_STEPS;i++){
-    vec4 n = texture2D(noisetex,(p.xz+cameraPosition.xz- frameTimeCounter)*.0001);
-    float density=(.05*n.r*n.r+.05*wetd)*exp2(-abs(p.y+cameraPosition.y-62.)*(.1+.3*sqrt(n.g)*(1.-.9*wetness)));
+    float density=.25*saturate(1.-abs(worley((p+cameraPosition)*.01)*worley((p+cameraPosition-frameTimeCounter)*.1)));
+    density*=density;
     float den = density*stlen;
-    float l = shadow2(p)*getCloudShadow(p);
-      shade=mix(fogColor,lc,rayl*l);
+    float l = .01*den;
+      shade=mix(fogColor,lc,l);
 
       float ext= exp2(-den);
       trans+=m*shade*(1.-ext);
       m*=ext;
-      if(m<.01){
+      if(m<.001){
         break;
       }
       //c=mix(shade,c,ext);
-      rba +=rb*(.2+.3*wetness)*l*rayl*rayl*(1.-ext);
       p+=st;
   }
-  return c*m+trans+rba;
+  return c*m+trans;
 }
-vec3 volumeLightSky(vec3 c,vec3 rd){
-
-  float rdDotUp = abs(normalize(rd).y);
-  float powe = 1./(1.-rdDotUp*.8);
-
-  vec3 p0 = gbufferModelViewInverse[3].xyz;
-  vec3 st = (rd-p0)/float(VOL_STEPS);
-  vec3 shade =vec3(0.);
-  float rdlen = length(rd);
-  //p0+=st*fract(dither);
-  float stlen = length(st);
-
-
-  vec3 fogColor = vec3(.058,.063,.08)*(1.+length(lightcol));
-  float rayl = .7+.3*saturate(mix(dot(normalize(rd),lightDir),1.,.3));
-  rayl*=rayl;
-
-  float wetd = wetness*wetness;
-  wetd = wetd*wetd;
-  vec3 li = lightcol*lightcol;
-  vec3 rb = vec3(li.r,0,0)*smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.1));
-  rb = mix(rb,vec3(0,li.g,0),smoothstep(.05,.0,abs(dot(normalize(rd),lightDir)+.125)));
-  rb = mix(rb,vec3(0,0,li.b),smoothstep(.04,.0,abs(dot(normalize(rd),lightDir)+.15)));
-  vec3 lc =lightcol;
-  vec3 rba = vec3(0);
-
-  float m = 1.;
-  vec3 trans = vec3(0);
-  float dist = stlen*fract(dither);
-  vec3 stn = normalize(st);
-  float lpd = 0.;
-  for(int i=0;i<VOL_STEPS;i++){
-    float pdist = pow(dist/rdlen,powe)*rdlen;
-
-    vec3 p = p0+stn*pdist;
-    float postlen = abs(lpd-pdist);
-    vec4 n = texture2D(noisetex,(p.xz+cameraPosition.xz- frameTimeCounter)*.0001);
-    float density=(.05*n.r*n.r+.05*wetd)*exp2(-abs(p.y+cameraPosition.y-62.)*(.1+.3*sqrt(n.g)*(1.-.9*wetness)));
-    float den = density*postlen;
-    float l = shadow2(p)*getCloudShadow(p);
-      shade=mix(fogColor,lc,rayl*l);
-
-      float ext= exp2(-den);
-      trans+=m*shade*(1.-ext);
-      m*=ext;
-      if(m<.01){
-        break;
-      }
-      //c=mix(shade,c,ext);
-      rba +=rb*(.2+.3*wetness)*l*rayl*rayl*(1.-ext);
-      lpd = pdist;
-      dist+=stlen;
-  }
-  return (c*m+trans+rba);
-}
-
 #endif
 
 /*DRAWBUFFERS:0*/
 void main(){
-  #include "../lib/lightcol.glsl"
-  lightDir=lightdir,lightcol=lightCol;
   vec3 c = texture2D(colortex0,tc).rgb;
   float pd = texture2D(depthtex0,tc).r;
 
@@ -214,39 +143,25 @@ void main(){
   float iswater = length(n)<.8?1.:0.;
   n = normalize(n);
 
-  lc = lightcol;
 
   vec3 p = (vec3(tc,pd));
   vec3 viewp = screen2view(p);
-  vec3 rd = normalize(viewp);
 
   float depth = depthBlock(pd);
 
 
-  if(isEyeInWater>0){
-    #ifdef VOLUMETRIC_WATER
-    c = volumeWater(p,gbufferModelViewInverse[3].xyz,0.,c);
-    #else
-    c= mix(vec3(.005,.007,.03)*lightCol,c,exp2(-depth*WATER_THICCNESS));
-    #endif
 
-  }else{
 
     vec3 rd = camdir(viewp);
-    float rayl = .2+.8*saturate(mix(dot(normalize(rd),lightDir),1.,.3));
-    vec3 fogColor = vec3(.05,.06,.1);
     #ifdef VOLUMETRIC_LIGHT
-    c=pd<1.?volumeLight(c,rd):volumeLightSky(c,rd);
+    c=volumeLight(c,rd);
     //fogColor = vol.rgb;
     #else
+    vec3 fogColor = vec3(.1,.9,.05);
     float vol=1.;
     c=mix(c,fogColor,vol);
     #endif
 
-
-    //if(fresnel>.01)
-    //c*=0.;
-  }
   gl_FragData[0] = vec4(c,1.);//texture2D(colortex1,tc*.5+vec2(.5,0.));
 
 }
