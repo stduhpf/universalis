@@ -1,7 +1,7 @@
 #version 120
-#include "../lib/essentials.glsl"
-#include "../lib/trans.glsl"
-#include "../lib/temp.glsl"
+#include "lib/essentials.glsl"
+#include "lib/trans.glsl"
+#include "lib/temp.glsl"
 
 const bool colortex6Clear = false;
 
@@ -13,7 +13,7 @@ uniform sampler2D colortex1;
 uniform sampler2D colortex0;
 uniform sampler2D depthtex1;
 
-
+#define TAA_STRENGTH .1 //[.05 .1 .15 .2 .25 .3 .4 .5 .75 .9 1.]
 
 /*DRAWBUFFERS:06*/
 void main(){
@@ -31,7 +31,7 @@ void main(){
   pclipPos=pclipPos*.5+.5;
 
   vec3 lastc = floor(pclipPos.xy)==vec2(0.)?neighborhoodClip(tc,texture2D(colortex6, pclipPos.xy).rgb,colortex0):c;
-  c=mix(lastc,c,.15);
+  c=mix(lastc,c,TAA_STRENGTH);
   gl_FragData[1]=vec4(c,1.);
 
   gl_FragData[0] = vec4(c,1.);
