@@ -48,6 +48,7 @@ vec3 lc=vec3(0.);
 #define SSR
 #define SHADOW_SPACE_REFLECTION
 
+#define FAKE_REFRACTION
 
 #define SSR_STEPS 8 //[4 8 12 16 24 32 64]$
 #define SSR_REJECTION
@@ -364,9 +365,21 @@ void main(){
   lightDir=lightdir,lightcol=lightCol;
 
   #include "lib/thunder.glsl"
-  vec3 c = texture2D(colortex0,tc).rgb;
+  vec3 n = texture2D(colortex2,tc).rgb*2.-1.;
+
+  float pd = texture2D(depthtex0,tc).r;
+  float depth = depthBlock(pd);
+
+
+  float iswater = length(n)<.8?1.:0.;
+  #ifdef FAKE_REFRACTION
+  vec2 tct = tc+(iswater>.5?n.xy*n.z*.15:vec2(0))*smoothstep(0.,2.,abs(depthBlock(texture2D(depthtex1,tc).r)-depth));
+#else
+  #define tct tc
+#endif
+  vec3 c = texture2D(colortex0,tct).rgb;
   vec3 refc = vec3(0);
-  outsideness = smoothstep(.6,1.,texture2D(colortex7,tc).g);
+  outsideness = smoothstep(.6,1.,texture2D(colortex7,tct).g);
   isout = outsideness>=.5;
   //c*=outsideness;
 
@@ -375,7 +388,6 @@ void main(){
 
 
   dither = fract(dither16(gl_FragCoord.xy)+frameTimeCounter*240.);
-  float pd = texture2D(depthtex0,tc).r;
 
   vec3 p = (vec3(tc,pd));
   vec3 viewp = screen2view(p);
@@ -384,9 +396,7 @@ void main(){
   //pbr.r = .9;
   float f0 = pbr.g*pbr.g;
 
-  vec3 n = texture2D(colortex2,tc).rgb*2.-1.;
 
-  float iswater = length(n)<.8?1.:0.;
   n = normalize(n);
   float sh = 0.;
   if(iswater>.5)
@@ -409,10 +419,9 @@ void main(){
     fresnel = ((1.0 - f0) * pow(1.0 - clamp(dot(-rd, n), 0.0, 1.0), 5.0)*(pbr.r) + f0);
   //fresnel=1.;
 
-  float depth = depthBlock(pd);
 
   if(pd<1.&&fresnel>0.001){
-    float pd2 = texture2D(depthtex1,tc).r;
+    float pd2 = texture2D(depthtex1,tct).r;
     if(iswater>.5){
       float deltad =abs(depthBlock(pd2)-depth);
 
