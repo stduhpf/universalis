@@ -4,8 +4,8 @@
 uniform sampler2D texture;
 uniform sampler2D normals;
 uniform sampler2D specular;
-#include "../lib/colorspace.glsl"
-#include "../lib/trans.glsl"
+#include "/lib/colorspace.glsl"
+#include "/lib/trans.glsl"
 #define NORMAL_MAPPING
 #define POM
 #define SELF_SHADOW

@@ -10,7 +10,7 @@ uniform sampler2D normals;
 #ifdef PBR
 uniform sampler2D specular;
 #endif
-#include "../lib/colorspace.glsl"
+#include "/lib/colorspace.glsl"
 
 varying vec3 normal;
 varying vec4 texcoord;
