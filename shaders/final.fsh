@@ -20,8 +20,8 @@ varying float avgexp;
 const float		sunPathRotation	= -30.0f;
 const bool shadowHardwareFiltering1 = false;
 const float 	ambientOcclusionLevel	 = 0.0f;
-const float wetnessHalflife = 750.0f;
-const float drynessHalflife = 150.0f;
+const float wetnessHalflife = 1500.0f;
+const float drynessHalflife = 1000.0f;
 
 /*
 const int colortex0Format = RGBA16;

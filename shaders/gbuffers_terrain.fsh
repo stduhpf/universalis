@@ -199,9 +199,9 @@ void main()
   gl_FragData[0]=gettex(texture,uv)*tintColor;
   gl_FragData[0].rgb= srgbToLinear(gl_FragData[0].rgb);//*step(abs(texres.x-texres.y),.0001);//*0.+blocklightdir;
 
-	gl_FragData[0].rgb*=(1.-porosity*wet*.82+.15*puddle*puddle);
-	PBRdata.g = mix(PBRdata.g,.134,wet*porosity*float(PBRdata.g<.9));
-	PBRdata.r= mix(PBRdata.r,1.,.5*wet*porosity);
+	gl_FragData[0].rgb*=(1.-porosity*wet*.82+.05*puddle*puddle);
+	PBRdata.g = mix(PBRdata.g,.134,wet*(.5+.5*porosity)*float(PBRdata.g<.9));
+	PBRdata.r= mix(PBRdata.r,1.,.5*wet*(.5+.5*porosity));
 	PBRdata.r= mix(PBRdata.r,1.,puddle*puddle);
 	//PBRdata.r= 1.-sqrt(fract(wpos.x*.5));
 	gl_FragData[4]=vec4(1);
