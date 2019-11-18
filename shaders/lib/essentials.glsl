@@ -78,7 +78,7 @@ float boxmax(vec2 tc,sampler2D t){
 }
 
 float haltonSeq(int b, int i) {
-    //i=int(mod(i,256));
+    i=int(mod(i,256));
 		float r = 0.;
     float f = 1.;
     while(i>0){
