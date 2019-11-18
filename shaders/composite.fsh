@@ -158,8 +158,9 @@ void main(){
           {
             //vec4 cl =base;
             vec3 n = cosineDirection(n,roughness*roughness,gl_FragCoord.xy);
-            vec3 cl=trace(p,reflect(rd,n),tc,ld,1e12);
-                c = cl;
+						vec3 cl=trace(p,reflect(rd,n),tc,ld,1e12);
+            c += cl;
+
           }
         }
         //gl_FragData[0]=vec4(saturate3(c),1.);

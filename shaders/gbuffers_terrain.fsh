@@ -190,7 +190,7 @@ void main()
   #endif
 	float porosity = PBRdata.b<.251?PBRdata.b*4.:0.;
 	PBRdata.b=saturate((PBRdata.b-.25)/.75);
-	float wet = wetness*smoothstep(.8,.93,lm.y);
+	float wet = wetness*smoothstep(.8,.93,lm.y)*2.;
 	float puddle=0.;
 	if(wet>0. && camdir(normal).y>.99){
 		puddle=puddlen(wpos)*wet;

@@ -72,6 +72,6 @@ void main(){
   #endif
   gl_FragData[0]=vec4(c.rgb*((pxdpth<1.&&pbr.g<.9)?
   (sh+gi+emmisiveness)
-  :vec3(1)),1.);
+  :vec3(.5+.5*float(pxdpth>=1.))),1.);
   gl_FragData[1]=vec4(lme.rg,shd,1.);
 }
