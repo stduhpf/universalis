@@ -190,10 +190,10 @@ void main()
   #endif
 	float porosity = PBRdata.b<.251?PBRdata.b*4.:0.;
 	PBRdata.b=saturate((PBRdata.b-.25)/.75);
-	float wet = wetness*smoothstep(.8,.93,lm.y)*2.;
+	float wet = wetness*smoothstep(.8,.93,lm.y);
 	float puddle=0.;
 	if(wet>0. && camdir(normal).y>.99){
-		puddle=puddlen(wpos)*wet;
+		puddle=puddlen(wpos)*wet*2.;
 		puddle=smoothstep(.45,.7,puddle);
 	}
   gl_FragData[0]=gettex(texture,uv)*tintColor;
@@ -201,7 +201,7 @@ void main()
 
 	gl_FragData[0].rgb*=(1.-porosity*wet*.82+.05*puddle*puddle);
 	PBRdata.g = mix(PBRdata.g,.134,wet*(.5+.5*porosity)*float(PBRdata.g<.9));
-	PBRdata.r= mix(PBRdata.r,1.,.5*wet*(.5+.5*porosity));
+	PBRdata.r= mix(PBRdata.r,1.,wet*(wet*.5+.5*porosity));
 	PBRdata.r= mix(PBRdata.r,1.,puddle*puddle);
 	//PBRdata.r= 1.-sqrt(fract(wpos.x*.5));
 	gl_FragData[4]=vec4(1);
