@@ -373,7 +373,10 @@ void main(){
 
   float iswater = length(n)<.8?1.:0.;
   #ifdef FAKE_REFRACTION
-  vec2 tct = tc+(iswater>.5?n.xy*n.z*.15:vec2(0))*smoothstep(0.,2.,abs(depthBlock(texture2D(depthtex1,tc).r)-depth));
+  vec2 tct = tc+(iswater>.5?n.xy*n.z*1.3/max(depth,.6):vec2(0))*smoothstep(0.,3.,abs(depthBlock(texture2D(depthtex1,tc).r)-depth));
+  tct = tc+(iswater>.5?n.xy*n.z*1.3/max(depth,.6):vec2(0))*smoothstep(0.,3.,abs(depthBlock(texture2D(depthtex1,tct).r)-depth));
+  if(texture2D(depthtex1,tct).r==texture2D(depthtex0,tct).r)
+    tct = tc;
 #else
   #define tct tc
 #endif
