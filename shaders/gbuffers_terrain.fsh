@@ -8,7 +8,7 @@
 //#define DIRECTIONAL_LIGHTMAPS //super broken, not recommended
 #define PBR
 //#define AO_FIX
-
+#define PARALLAX_ALTER_DEPTHMAP
 
 uniform sampler2D texture;
 uniform sampler2D normals;
@@ -134,7 +134,9 @@ float brdflight(vec3 n, vec3 v, vec3 l,float r){
 }
 
 float puddlen(vec3 p){
-	return smoothstep(.6,.7,texture2D(noisetex,p.xz*.0006).r)*(texture2D(noisetex,p.xz*.003).r*.75+.2*texture2D(noisetex,vec2(p.x+p.z,p.x-p.z)*.0008).r+.05*texture2D(noisetex,vec2(p.x-p.z,p.x+p.z)*.1).r);
+	return smoothstep(.6,.7,texture2D(noisetex,p.xz*.0006).r)*(texture2D(noisetex,p.xz*.003).r*.75
+	+.2*texture2D(noisetex,vec2(p.x+p.z,p.x-p.z)*.0008).r
+	+.03*texture2D(noisetex,vec2(p.x-p.z,p.x+p.z)*.1).r);
 }
 
 float hash(vec2 p){
@@ -179,6 +181,7 @@ void main()
 	#else
 	vec2 uv = texcoord.st;
 	#endif
+	vec2 distpar= vec2(uv-texcoord.st)/tt;
   vec2 lm = lmcoord.xy/256.;
 	mat2 dlm = mat2(dFdx(lm.x),-dFdy(lm.x),dFdx(lm.y),-dFdy(lm.y));
   vec3 blocklightdir = normalize(vec3(dlm[0],2.*length(dlm[0])*(lm.x)));
@@ -194,7 +197,7 @@ void main()
 	float puddle=0.;
 	if(wet>0. && camdir(normal).y>.99){
 		puddle=puddlen(wpos)*wet*2.;
-		puddle=smoothstep(.45,.7,puddle);
+		puddle=smoothstep(.3,.7,puddle);
 	}
   gl_FragData[0]=gettex(texture,uv)*tintColor;
   gl_FragData[0].rgb= srgbToLinear(gl_FragData[0].rgb);//*step(abs(texres.x-texres.y),.0001);//*0.+blocklightdir;
@@ -211,7 +214,7 @@ void main()
 		vec4 a = voro(p.xz);
 		vec2 d = normalize(a.yz-fract(p.xz));
 		float phi = a.a*10.;
-		d= .03*d*cos(50.*a.x- frameTimeCounter *24.+phi)*exp( -2.*a.x);
+		d= .1*d*cos(50.*a.x- frameTimeCounter *24.+phi)*exp( -5.*a.x);
 		nrml=tbn*normalize(vec3(d.x,d.y,1.));
 	}
 #ifdef NORMAL_MAPPING
@@ -237,9 +240,11 @@ vec4 nmp = gettex(normals,uv);
 	gl_FragData[4].r=(ao);
 	//gl_FragData[0].rgb = vec3(ao*ao);
 
-if(puddle>=nmp.a){
+if(pow(puddle,.1)>=nmp.a){
 	n=nrml;
-	//PBRdata.xyz=vec3(.9,.134,0.);
+	if(PBRdata.g<.9)
+	PBRdata.xyz=vec3(.9,.134,0.);
+	nmp.a = pow(puddle,.1);
 }
 
 #endif
@@ -254,4 +259,7 @@ if(puddle>=nmp.a){
 	//gl_FragData[0].rgb=vec3(getpa(texture,uv),0.);
 	//gl_FragData[0].rgb*=step(224, lmcoord.x);
 	gl_FragData[1]=vec4(PBRdata.rgb,1);
+	#ifdef PARALLAX_ALTER_DEPTHMAP
+	gl_FragDepth = blockToFrag(depthBlock(gl_FragCoord.z)+sqrt(dot(distpar,distpar)+POM_DEPTH*POM_DEPTH*(1.-nmp.a)*(1.-nmp.a)));
+	#endif
 }

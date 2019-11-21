@@ -159,3 +159,6 @@ float depthLin(float depth) {           //get linear depth
 float depthBlock(float depth) {           //get linear depth
     return (far-near)*(near) / (far + near - depth * (far - near));
 }
+float blockToFrag(float depth){
+  return (far+near)/(far-near)-near/depth;
+}
