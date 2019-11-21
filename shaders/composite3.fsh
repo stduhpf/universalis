@@ -275,8 +275,10 @@ vec3 volumeLight(vec3 c,vec3 rd,vec3 p){
   p-=st*fract(dit);
 
   vec3 fogColor = vec3(.058,.063,.08)*(1.+length(lightcol));
-float rayl = .7+.3*saturate(mix(dot(normalize(rd),lightDir),1.,.3));
-rayl*=rayl;
+  float rayl = saturate(mix(dot(normalize(rd),lightDir),1.,.3));
+  rayl=2.*pow(rayl,8.);
+  rayl+=.6;
+
 float wetd = wetness*wetness;
 wetd = wetd*wetd;
 vec3 li = lightcol*lightcol;
@@ -289,7 +291,7 @@ float stlen = length(st);
 
   for(int i=0;i<VOL_STEPS;i++){
     vec4 n = texture2D(noisetex,(p.xz+cameraPosition.xz- frameTimeCounter)*.0001);
-    float density=(.05*n.r*n.r+.05*wetd)*exp2(-abs(p.y+cameraPosition.y-62.)*(.1+.3*sqrt(n.g)*(1.-.9*wetness)));
+    float density=.0005+(.05*n.r*n.r+.05*wetd)*exp2(-abs(p.y+cameraPosition.y-62.)*(.1+.3*sqrt(n.g)*(1.-.9*wetness)));
     float den = density*stlen;
     float l = shadow2(p)*getCloudShadow(p);
       shade=mix(fogColor,lc,rayl*l);
@@ -315,8 +317,9 @@ vec3 volumeLightSky(vec3 c,vec3 rd,vec3 p0){
 
 
   vec3 fogColor = vec3(.058,.063,.08)*(1.+length(lightcol));
-  float rayl = .7+.3*saturate(mix(dot(normalize(rd),lightDir),1.,.3));
-  rayl*=rayl;
+  float rayl = saturate(mix(dot(normalize(rd),lightDir),1.,.3));
+  rayl=2.*pow(rayl,8.);
+  rayl+=.6;
 
   float wetd = wetness*wetness;
   wetd = wetd*wetd;
@@ -338,7 +341,7 @@ vec3 volumeLightSky(vec3 c,vec3 rd,vec3 p0){
     vec3 p = p0+stn*pdist;
     float postlen = abs(lpd-pdist);
     vec4 n = texture2D(noisetex,(p.xz+cameraPosition.xz- frameTimeCounter)*.0001);
-    float density=(.05*n.r*n.r+.05*wetd)*exp2(-abs(p.y+cameraPosition.y-62.)*(.1+.3*sqrt(n.g)*(1.-.9*wetness)));
+    float density=.0005+(.05*n.r*n.r+.05*wetd)*exp2(-abs(p.y+cameraPosition.y-62.)*(.1+.3*sqrt(n.g)*(1.-.9*wetness)));
     float den = density*postlen;
     float l = shadow2(p)*getCloudShadow(p);
       shade=mix(fogColor,lc,rayl*l);
