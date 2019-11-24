@@ -1,4 +1,4 @@
-#version 130
+#version 420
 #extension GL_ARB_shader_texture_lod : enable
 #extension GL_ARB_gpu_shader4 : enable
 
@@ -9,6 +9,9 @@
 #define PBR
 //#define AO_FIX
 #define PARALLAX_ALTER_DEPTHMAP
+#ifdef PARALLAX_ALTER_DEPTHMAP
+layout (depth_greater) out float gl_FragDepth;
+#endif
 
 uniform sampler2D texture;
 uniform sampler2D normals;
@@ -20,24 +23,25 @@ uniform sampler2D noisetex;
 #include "lib/trans.glsl"
 #include "lib/essentials.glsl"
 
-varying vec3 normal;
-varying vec4 texcoord;
-varying vec4 tintColor;
-varying vec4 lmcoord;
-varying mat3 tbn;
-varying vec3 vpos;
-varying vec2 midTexCoord;
+in vec3 normal;
+in vec4 texcoord;
+in vec4 tintColor;
+in vec4 lmcoord;
+in mat3 tbn;
+in vec3 vpos;
+in vec2 midTexCoord;
 uniform vec3 shadowLightPosition;
 uniform float frameTimeCounter;
 uniform int frameCounter;
-varying vec3 wpos;
+in vec3 wpos;
+
 
 const int noiseTextureResolution = 256;
 
 uniform float wetness;
 uniform float rainStrength;
 
-varying vec2 texres;
+in vec2 texres;
 #define tt texres // vec2(max(texres.x,texres.y))
 
 float dither = bayer16(gl_FragCoord.xy);

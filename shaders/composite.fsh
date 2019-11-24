@@ -108,15 +108,59 @@ mat3 gettbn(vec3 nor){
     vec3 vv = vec3( tc.z, tc.y, -nor.y );
     return mat3(uu,vv,nor);
 }
-vec3 cosineDirection( in vec3 nor,float r, vec2 fc)
+vec3 cosineDirection( in vec3 nor,float r, vec2 fc, int it)
 {
 	 float seed= dither8(fc);//+frameTimeCounter*120.1;
     mat3 tbn = gettbn(nor);
 
-    float u = r*fract(haltonSeq(5,frameCounter)+seed);//hash13(vec3(fc, 78.233) + seed);
-    float v = TAU*fract(haltonSeq(7,frameCounter+12+int(seed*16.)));//hash13( vec3(fc,10.873 )+ seed);
+    float seqf = haltonSeq(13,it);
+
+    float u = r*fract(haltonSeq(5,20)+seed+seqf);//hash13(vec3(fc, 78.233) + seed);
+    float v = TAU*fract(haltonSeq(7,20+12+int(seed*16.))-seqf);//hash13( vec3(fc,10.873 )+ seed);
     return  normalize(tbn*vec3(sqrt(u)*vec2(cos(v),sin(v)) , sqrt(1.0-u)));
 }
+
+vec3 tracerough(vec3 ro,vec3 rd,vec2 I,vec3 ld,float dpt,float q){
+
+    float h = (cloud_min_plane-ro.y)/(rd.y);
+    float h2 = (cloud_top_plane-ro.y)/(rd.y);
+  if((h<0.&&h2<0.)||(h>dpt&&h2>dpt))
+    return vec3(1.);
+  float t= h;
+  h=max(h,h2),
+  h=min(h,dpt),
+  h2 = minp(t,h2);
+  if(h2==0.)h=min(h,240.);
+  float d = fract(bayer16(I*resolution));
+
+  float extinct = 1.;
+  float lightness = 0.;
+  vec3 p = ro+(h-d*(h2-=h)/q)*rd;
+    float sts = h2/q;
+    for(int i = 0;i++<int(q)+1;p+=rd*sts){
+        float v =max(cloods(p),0.);
+        float vp = exp2(-abs(sts)*cloud_den*v);
+        extinct*=(vp);
+        lightness = mix(shad(p,ld,d),lightness,vp);
+    }
+	return vec3(1.-(1.-extinct)*exp2(-h*.00015),lightness,extinct);
+}
+#define CLOUD_REF_FILTER 4 //[1 2 4 8 16]
+vec3 traceRough(vec3 ro,vec3 rd,vec2 I,vec3 ld,float dpt,float rough,vec3 n){
+	  vec3 c = vec3(0);
+	  float rq = rough*rough;
+	  //rq *=rq;
+		float q = ceil(CLOUD_RAYTRACING_QUALITY*(1.0-rough));
+	  for(int i=0;i<int(1.+CLOUD_REF_FILTER*rough);i++){
+
+	  vec3 n = cosineDirection(n,rq,gl_FragCoord.xy,i);
+
+	  c+= tracerough(ro,reflect(rd,n),I,ld,dpt,q);
+	  }
+	  return c/ceil(CLOUD_REF_FILTER*rough);
+
+}
+
 
 /*DRAWBUFFERS:1*/
 void main(){
@@ -157,8 +201,8 @@ void main(){
           if(fresnel>.001)
           {
             //vec4 cl =base;
-            vec3 n = cosineDirection(n,roughness*roughness,gl_FragCoord.xy);
-						vec3 cl=trace(p,reflect(rd,n),tc,ld,1e12);
+            //vec3 n = cosineDirection(n,roughness*roughness,gl_FragCoord.xy);
+						vec3 cl=traceRough(p,rd,tc,ld,1e12,roughness,n);
             c += cl;
 
           }

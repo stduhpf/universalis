@@ -1,14 +1,14 @@
-#version 130
+#version 420
 
-varying vec3 normal;
-varying vec4 texcoord;
-varying vec4 tintColor;
-varying vec4 lmcoord;
-varying mat3 tbn;
-varying vec3 vpos;
-varying vec2 midTexCoord;
-varying vec2 texres;
-varying vec3 wpos;
+out vec3 normal;
+out vec4 texcoord;
+out vec4 tintColor;
+out vec4 lmcoord;
+out mat3 tbn;
+out vec3 vpos;
+out vec2 midTexCoord;
+out vec2 texres;
+out vec3 wpos;
 attribute vec4 at_tangent;
 attribute vec2 mc_midTexCoord;
 
