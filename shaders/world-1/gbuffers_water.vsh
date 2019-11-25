@@ -30,7 +30,7 @@ void main()
 	vec2 offset = vec2(haltonSeq(5,frameCounter),haltonSeq(7,frameCounter+12));
 	midTexCoord = mc_midTexCoord;
 	gl_Position = ftransform();
-	gl_Position.xy += (offset-.5)*gl_Position.w/resolution;
+	gl_Position.xy += 2.*(offset-.5)*gl_Position.w/resolution;
 	texcoord = gl_MultiTexCoord0;
 	lmcoord = gl_MultiTexCoord1;
 	tintColor = gl_Color;
