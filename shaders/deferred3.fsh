@@ -142,7 +142,7 @@ vec3 rsm(float pixdpth,vec3 normal,vec3 pbr){
     #endif
   }
   #include "lib/lightcol.glsl"
-	return lightCol*a*30000.*RSM_DIST*RSM_DIST*inte/sweight;
+	return lightCol*a*35000.*RSM_DIST*RSM_DIST*inte/sweight;
 }
 #endif
 vec3 colorshadow(float pixdpth,vec3 pbr,inout float sh,vec3 rd,vec3 n){

@@ -1,9 +1,9 @@
 #version 400
 
-#include "../lib/colorspace.glsl"
-#include "../lib/essentials.glsl"
-#include "../lib/bloom.glsl"
-#include "../lib/temp.glsl"
+#include "/lib/colorspace.glsl"
+#include "/lib/essentials.glsl"
+#include "/lib/bloom.glsl"
+#include "/lib/temp.glsl"
 
 
 // temporal buffers: 5 6, don't touch
@@ -14,14 +14,14 @@ uniform sampler2D colortex1;
 uniform sampler2D colortex0;
 uniform float frameTimeCounter;
 varying vec2 tc;
-varying float avgexp;
+
 
 
 const float		sunPathRotation	= -30.0f;
 const bool shadowHardwareFiltering1 = false;
 const float 	ambientOcclusionLevel	 = 0.0f;
-const float wetnessHalflife = 750.0f;
-const float drynessHalflife = 150.0f;
+const float wetnessHalflife = 1500.0f;
+const float drynessHalflife = 1000.0f;
 
 /*
 const int colortex0Format = RGBA16;
@@ -78,7 +78,7 @@ const vec3 midtone = vec3(.5,.48,.45);
 const vec3 brightone = vec3(.85,.9,1);
 
 vec3 grading(vec3 x){
-  x*=EXPOSURE_MULTIPLIER/avgexp;
+  x*=EXPOSURE_MULTIPLIER;
   vec3 lumaWeights = vec3(.3,.59,.11);
   float grey = dot(lumaWeights,x);
   x = grey + (x-grey)*SATURATION;

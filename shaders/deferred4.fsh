@@ -28,7 +28,7 @@ vec3 filt(vec2 tc, sampler2D s){
 /*DRAWBUFFERS:14*/
 void main(){
   gl_FragData[0]=vec4(filt(tc,colortex1).rg,texture2D(colortex1, tc).b,1.);
-  #ifdef GLOBAL_ILLUMINATION
+  #ifdef GLOBAL_ILLUMINATIOOOO
   gl_FragData[1]=vec4(filt(tc,colortex4),1.);
   #else
   gl_FragData[1]=texture2D(colortex4,tc);

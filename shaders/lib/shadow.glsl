@@ -2,7 +2,7 @@
 #define sshradius .1/PCSS_ACCURACY    //radius in m*pixel/screenwidthh
 
 #define PCSS_SAMPLES 8  //[1 2 4 8 12 16]
-#define shadow_offset 0.0001
+#define shadow_offset 0.00025
 
 //#define SSCS
 

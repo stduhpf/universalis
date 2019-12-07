@@ -14,7 +14,7 @@ uniform sampler2D colortex1;
 uniform sampler2D colortex0;
 uniform float frameTimeCounter;
 varying vec2 tc;
-varying float avgexp;
+
 
 
 const float		sunPathRotation	= -30.0f;
@@ -78,7 +78,7 @@ const vec3 midtone = vec3(.5,.48,.45);
 const vec3 brightone = vec3(.85,.9,1);
 
 vec3 grading(vec3 x){
-  x*=EXPOSURE_MULTIPLIER/avgexp;
+  x*=EXPOSURE_MULTIPLIER;
   vec3 lumaWeights = vec3(.3,.59,.11);
   float grey = dot(lumaWeights,x);
   x = grey + (x-grey)*SATURATION;

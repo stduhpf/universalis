@@ -7,8 +7,10 @@ const bool colortex5Clear = false;
 #include "lib/temp.glsl"
 
 uniform sampler2D colortex0;
+uniform sampler2D gnormal;
 uniform sampler2D colortex1;
 uniform sampler2D depthtex1;
+uniform sampler2D depthtex2;
 uniform sampler2D colortex7;
 uniform sampler2D colortex4;
 uniform sampler2D colortex5;
@@ -20,7 +22,12 @@ uniform float rainStrength;
 
 #define TEMPORAL_LIGHT_ACCUMULATION
 #define GLOBAL_ILLUMINATION
-
+#define GI_HQ_FILTER
+#ifdef GI_HQ_FILTER
+#define filtersize 2
+#else
+#define filtersize 1
+#endif
 
 uniform int frameCounter;
 
@@ -31,6 +38,7 @@ varying vec2 tc;
 
 #ifdef GLOBAL_ILLUMINATION
 vec3 filt(vec2 tc, sampler2D s){
+  return texture2D(s,tc ).rgb;
   vec3 a = vec3(0);
   float b =0.;
   float dp =depthLin(texture2D(depthtex1,tc).r);
@@ -51,6 +59,9 @@ vec3 filt(vec2 tc, sampler2D s){
 #include "lib/lmcol.glsl"
 
 
+float hash(float seed) {
+    return fract(sin(seed)*43758.5453123);
+}
 /*DRAWBUFFERS:154*/
 void main() {
   #include "lib/thunder.glsl"
@@ -64,9 +75,47 @@ void main() {
   float ao =naosh.x;
   vec3 boltc = bolt*ao*lmcoord.y*vec3(.1,.01,.4);
   #include "lib/ambcol.glsl"
-  ao*=.1+lmcoord.y*ambi;
+  ao*=.05+lmcoord.y*ambi;
   #ifdef GLOBAL_ILLUMINATION
-        vec3 newgi =  filt(tc,colortex4)+ambientCol*ao+boltc;
+
+
+    const float kernel[6] = float[](9./64., 3./32., 3./128., 1./64., 1./16., 1./256.);
+    vec3 sum =  vec3(0);
+    float cum_w = 0.0;
+    float c_phi = 1.0;
+    float r_phi = 1.0;
+    float n_phi = 0.5;
+    float p_phi = 0.25;
+
+    vec3 cval = texture2D(colortex4, tc).xyz;
+    vec3 nval = texture2D(gnormal, tc).xyz;
+
+    float ang = 2.0*3.1415926535*hash(2510.12860182*tc.x + 7290.9126812*tc.y+5.1839513*frameCounter);
+    mat2 m = mat2(cos(ang),sin(ang),-sin(ang),cos(ang));
+    float denoiseStrength = (1. + 3.*hash(6410.128752*tc.x + 3120.321374*tc.y+1.92357812*frameCounter));
+
+  for(int i=-filtersize; i<filtersize+1; i++){
+    for(int j=-filtersize; j<filtersize+1; j++){
+        vec2 uv = (tc+m*(vec2(i,j)* denoiseStrength)/resolution.xy);
+
+        vec3 ctmp = texture2D(colortex4, uv).xyz;
+        vec3 t = cval - ctmp;
+        float dist2 = dot(t,t);
+        float c_w = min(exp(-(dist2)/c_phi), 1.0);
+
+        vec3 ntmp = texture2D(gnormal, uv).xyz;
+        t = nval - ntmp;
+        dist2 = max(dot(t,t), 0.0);
+        float n_w = min(exp(-(dist2)/n_phi), 1.0);
+
+        int kerk = int(abs(i)==0||abs(i)!=abs(j)?abs(i)+abs(j):3.+abs(i));
+
+        float weight0 = c_w*n_w;
+        sum += ctmp*weight0*kernel[kerk];
+        cum_w += weight0*kernel[kerk];
+      }
+    }
+  vec3 newgi = sum/cum_w+ambientCol*ao+boltc;
   #else
         vec3 newgi = ambientCol*ao;
   #endif
@@ -90,12 +139,15 @@ void main() {
 
     vec3 lastgi = texture2D(colortex5, pclipPos.xy).rgb;
 
+    vec3 t = newgi-lastgi;
+    float distgi = dot(t,t);
+    float p = exp(-distgi/p_phi);
 
-    if(pclipPos.xy != clamp(pclipPos.xy,0,1)){
+    if(pclipPos.xy != clamp(pclipPos.xy,0,1)||texture2D(depthtex1,pclipPos.xy).r!=texture2D(depthtex2,pclipPos.xy).r){
         lastgi=newgi;
     }
 
-        newgi = mix(lastgi,newgi,.3);
+        newgi = mix(lastgi,newgi,.25);
 
 
       gl_FragData[0] = vec4(0.,naosh.yz,1);
