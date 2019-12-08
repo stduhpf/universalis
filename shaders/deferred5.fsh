@@ -23,6 +23,7 @@ uniform float rainStrength;
 #define TEMPORAL_LIGHT_ACCUMULATION
 #define GLOBAL_ILLUMINATION
 #define GI_HQ_FILTER
+#define GI_DITHER_SCALE 2  //[1 2 3 4 5 6 7 8]
 #ifdef GI_HQ_FILTER
 #define filtersize 2
 #else
@@ -92,8 +93,8 @@ void main() {
 
     float ang = 2.0*3.1415926535*hash(2510.12860182*tc.x + 7290.9126812*tc.y+5.1839513*frameCounter);
     mat2 m = mat2(cos(ang),sin(ang),-sin(ang),cos(ang));
-    float denoiseStrength = (1. + 3.*hash(6410.128752*tc.x + 3120.321374*tc.y+1.92357812*frameCounter));
-
+    float denoiseStrength = GI_DITHER_SCALE*(2. + 3.*hash(6410.128752*tc.x + 3120.321374*tc.y+1.92357812*frameCounter));
+vec3 newgi = ambientCol*ao+boltc;
   for(int i=-filtersize; i<filtersize+1; i++){
     for(int j=-filtersize; j<filtersize+1; j++){
         vec2 uv = (tc+m*(vec2(i,j)* denoiseStrength)/resolution.xy);
@@ -115,7 +116,7 @@ void main() {
         cum_w += weight0*kernel[kerk];
       }
     }
-  vec3 newgi = sum/cum_w+ambientCol*ao+boltc;
+  newgi += sum/cum_w;
   #else
         vec3 newgi = ambientCol*ao;
   #endif
@@ -141,13 +142,13 @@ void main() {
 
     vec3 t = newgi-lastgi;
     float distgi = dot(t,t);
-    float p = exp(-distgi/p_phi);
+    float p = .05+.95*exp(-distgi/p_phi);
 
     if(pclipPos.xy != clamp(pclipPos.xy,0,1)||texture2D(depthtex1,pclipPos.xy).r!=texture2D(depthtex2,pclipPos.xy).r){
         lastgi=newgi;
     }
 
-        newgi = mix(lastgi,newgi,.25);
+        newgi = mix(lastgi,newgi,p);
 
 
       gl_FragData[0] = vec4(0.,naosh.yz,1);

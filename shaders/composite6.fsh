@@ -17,14 +17,15 @@ uniform int frameCounter;
 #define TAA_STRENGTH .1 //[.05 .1 .15 .2 .25 .3 .4 .5 .75 .9 1.]
 
 #define AVGEXPS 20.
-#define expocurve 200.
-#define EXPOSURE_SPEED .01 //[.001 .0025 .005 .0075 .01 .015 .02 .05 1. 2.]
+#define expocurve 20.
+#define EXPOSURE_SPEED .01 //[.001 .0025 .005 .0075 .01 .015 .02 .05 1. 2. 100.]
 
 #define AUTO_EXPOSURE
 /*DRAWBUFFERS:06*/
 void main(){
   float avgexp=1.,expo=1.;
   #ifdef AUTO_EXPOSURE
+  expo = texture2D(colortex6,2.5/resolution).a;
   vec2 fc = tc*resolution;
   if(max(fc.x,fc.y)<5.){
     vec3 lumaWeights = vec3(.3,.59,.11);
@@ -39,9 +40,10 @@ void main(){
         }
       }
     avgexp/=AVGEXPS*AVGEXPS;
-    avgexp=pow(avgexp,expocurve)*50.;
+    avgexp=pow(avgexp,expocurve);
+    avgexp=mix(avgexp,expo,exp2(-EXPOSURE_SPEED));
   }
-  expo = texture2D(colortex6,2./resolution).a;
+  expo*=15.;
   #endif
 
   vec3 c = texture2D(colortex0,tc).rgb;
@@ -59,7 +61,7 @@ void main(){
 
   vec3 lastc = floor(pclipPos.xy)==vec2(0.)?neighborhoodClip(tc,texture2D(colortex6, pclipPos.xy).rgb,colortex0):c;
   c=mix(lastc,c,TAA_STRENGTH);
-  gl_FragData[1]=vec4(c,mix(avgexp,expo,exp2(-EXPOSURE_SPEED)));
+  gl_FragData[1]=vec4(c,avgexp);
   gl_FragData[0] = vec4(c/expo,1.);
 
 
