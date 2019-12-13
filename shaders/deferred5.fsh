@@ -78,6 +78,7 @@ void main() {
   #include "lib/ambcol.glsl"
   ao*=.05+lmcoord.y*ambi;
   #ifdef GLOBAL_ILLUMINATION
+  vec3 newgi = ambientCol*ao+boltc;
 
 
     const float kernel[6] = float[](9./64., 3./32., 3./128., 1./64., 1./16., 1./256.);
@@ -94,7 +95,6 @@ void main() {
     float ang = 2.0*3.1415926535*hash(2510.12860182*tc.x + 7290.9126812*tc.y+5.1839513*frameCounter);
     mat2 m = mat2(cos(ang),sin(ang),-sin(ang),cos(ang));
     float denoiseStrength = GI_DITHER_SCALE*(2. + 3.*hash(6410.128752*tc.x + 3120.321374*tc.y+1.92357812*frameCounter));
-vec3 newgi = ambientCol*ao+boltc;
   for(int i=-filtersize; i<filtersize+1; i++){
     for(int j=-filtersize; j<filtersize+1; j++){
         vec2 uv = (tc+m*(vec2(i,j)* denoiseStrength)/resolution.xy);

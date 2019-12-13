@@ -196,7 +196,7 @@ void main(){
             fresnel=1.;
             else
           #endif
-            fresnel = ((1.0 - f0) * pow(1.0 - clamp(dot(-rd, n), 0.0, 1.0), 5.0) + f0)*(pbr.r);
+            fresnel = ((1.0 - f0) * pow(1.0 - clamp(dot(-rd, n), 0.0, 1.0), 5.0) + f0)*(pbr.r*pbr.r);
 
           if(fresnel>.001)
           {

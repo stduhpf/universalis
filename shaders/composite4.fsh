@@ -22,7 +22,7 @@ vec3 filter(sampler2D s,vec2 tc,float a){
 /*DRAWBUFFERS:0*/
 void main(){
   vec3 c = texture2D(colortex0,tc).rgb;
-  vec3 refc = filter(colortex4,tc,.25).rgb;
+  vec3 refc = texture2D(colortex4,tc).rgb;
 
   gl_FragData[0] = vec4(c+refc,1.);
 }
