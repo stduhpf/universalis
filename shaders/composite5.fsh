@@ -34,7 +34,7 @@ uniform int worldTime;
 
 
 #include "lib/lmcol.glsl"
-#include "lib/clouds.set"
+#include "lib/clouds.glsl"
 
 vec3 lc=vec3(0.);
 
@@ -89,7 +89,7 @@ vec3 volumeWater(vec3 p1, vec3 p2,float sh, vec3 c){
 
 #define VOL_STEPS 8 //[2 4 8 16 32]
 #define VOLUMETRIC_LIGHT
-
+#define FOG_DETAIL 1 //[1 2 3]
 #ifdef VOLUMETRIC_LIGHT
 vec3 volumeLight(vec3 c,vec3 rd){
 
@@ -122,7 +122,15 @@ vec3 volumeLight(vec3 c,vec3 rd){
 
   for(int i=0;i<VOL_STEPS;i++){
     vec4 n = texture2D(noisetex,(p.xz+cameraPosition.xz- frameTimeCounter)*.0001);
-    float density=.0005+(.05*n.r*n.r+.05*wetd)*exp2(-abs(p.y+cameraPosition.y-62.)*(.1+.3*sqrt(n.g)*(1.-.9*wetness)));
+    float density=.00025+(.05*n.r*n.r+.05*wetd)*exp2(-abs(p.y+cameraPosition.y-62.)*(.1+.3*sqrt(n.g)*(1.-.9*wetness)))
+    #if FOG_DETAIL>1
+    *(saturate(worley((p+cameraPosition)*.15)*.5+.5)
+    #if FOG_DETAIL>2
+    *.75+.25*saturate(worley((p+cameraPosition)*.5)*.5+.5)
+    #endif
+    )
+    #endif
+    ;
     float den = density*stlen;
     float l = shadow2(p)*getCloudShadow(p);
       shade=mix(fogColor,lc,rayl*l);
@@ -177,7 +185,15 @@ vec3 volumeLightSky(vec3 c,vec3 rd){
     vec3 p = p0+stn*pdist;
     float postlen = abs(lpd-pdist);
     vec4 n = texture2D(noisetex,(p.xz+cameraPosition.xz- frameTimeCounter)*.0001);
-    float density=.0005+(.05*n.r*n.r+.05*wetd)*exp2(-abs(p.y+cameraPosition.y-62.)*(.1+.3*sqrt(n.g)*(1.-.9*wetness)));
+    float density=.00025+(.05*n.r*n.r+.05*wetd)*exp2(-abs(p.y+cameraPosition.y-62.)*(.1+.3*sqrt(n.g)*(1.-.9*wetness)))
+    #if FOG_DETAIL>1
+    *(saturate(worley((p+cameraPosition)*.15)*.5+.5)
+    #if FOG_DETAIL>2
+    *.75+.25*saturate(worley((p+cameraPosition)*.5)*.5+.5)
+    #endif
+    )
+    #endif
+    ;
     float den = density*postlen;
     float l = shadow2(p)*getCloudShadow(p);
       shade=mix(fogColor,lc,rayl*l);

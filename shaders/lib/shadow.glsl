@@ -2,7 +2,7 @@
 #define sshradius .1/PCSS_ACCURACY    //radius in m*pixel/screenwidthh
 
 #define PCSS_SAMPLES 8  //[1 2 4 8 12 16]
-#define shadow_offset 0.00025
+#define shadow_offset 0.000005
 
 //#define SSCS
 
@@ -56,7 +56,7 @@ float getSoftShadows(vec3 sp, float pen,float d){
     angle *= Grot;
     vec2 sc = (r-1.)*angle+sp.xy;
     float depth =(texture2D(shadowtex1,sc).r);
-    a+= step(sp.z-shadow_offset*(SHADOW_BIAS+length8(sc)),depth);
+    a+= step(sp.z-shadow_offset*(SHADOW_BIAS+100.*length8(sc)),depth);
   }
 return a/float(PCSS_SAMPLES);
 }
