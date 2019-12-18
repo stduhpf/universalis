@@ -109,7 +109,7 @@ void main() {
         dist2 = max(dot(t,t), 0.0);
         float n_w = min(exp(-(dist2)/n_phi), 1.0);
 
-        int kerk = int(abs(i)==0||abs(i)!=abs(j)?abs(i)+abs(j):3.+abs(i));
+        int kerk = int((i*i)==0||(i*i)!=(j*j)?abs(float(i))+abs(float(j)):3.+abs(float(i)));
 
         float weight0 = c_w*n_w;
         sum += ctmp*weight0*kernel[kerk];

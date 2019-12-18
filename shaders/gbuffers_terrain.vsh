@@ -1,4 +1,4 @@
-#version 420
+#version 420 compatibility
 
 out vec3 normal;
 out vec4 texcoord;
