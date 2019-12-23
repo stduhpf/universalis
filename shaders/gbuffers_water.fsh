@@ -35,6 +35,7 @@ uniform ivec2 atlasSize;
 
 uniform vec3 shadowLightPosition;
 uniform int worldTime;
+uniform float rainStrength;
 
 //{//water stuff
 
@@ -314,7 +315,7 @@ void main()
 		gl_FragData[3]=vec4(PBRdata.rgb,1);
 		vec3 n = normal;
 	#ifdef NORMAL_MAPPING
-		n = normalize(gettex(normals,uv).rgb*2.-1.);
+		n = tbn*normalize(gettex(normals,uv).rgb*2.-1.);
 	#endif
 		gl_FragData[2]=vec4(n*.5+.5,1.);
 
@@ -322,7 +323,9 @@ void main()
 
 		#include "lib/ambcol.glsl"
 
-		gl_FragData[0].rgb*=mix(vec3(1.),diffuse(normalize(vpos),normalize(shadowLightPosition),n,pow(1.-PBRdata.r,2.))*lightCol*shadow3(world2cam(p))+ambientCol*lm.y*ambi+TorchColor*lm.x,gl_FragData[0].a);
+		gl_FragData[0].rgb*= mix((ambientCol*lm.y*ambi+TorchColor*lm.x),diffuse(normalize(vpos),(normalize(shadowLightPosition)),n,1.+0.*pow(1.-PBRdata.r,2.))*lightCol*shadow3(world2cam(p))+ambientCol*lm.y*ambi+TorchColor*lm.x,gl_FragData[0].a);
+
+
 		gl_FragData[1]=vec4(1,0.,1.,1.);
 	}
 	gl_FragData[4]=vec4(lm,0.,1.);
