@@ -138,9 +138,9 @@ float brdflight(vec3 n, vec3 v, vec3 l,float r){
 }
 
 float puddlen(vec3 p){
-	return smoothstep(.6,.7,texture2D(noisetex,p.xz*.0006).r)*(texture2D(noisetex,p.xz*.003).r*.75
-	+.2*texture2D(noisetex,vec2(p.x+p.z,p.x-p.z)*.0008).r
-	+.03*texture2D(noisetex,vec2(p.x-p.z,p.x+p.z)*.1).r);
+	return saturate(smoothstep(.6,.7,texture2D(noisetex,p.xz*.0006).r)*(texture2D(noisetex,p.xz*.003).r*.7
+	+.5*(texture2D(noisetex,vec2(p.x+p.z,p.x-p.z)*.0008).r-.5)
+	+.03*texture2D(noisetex,vec2(p.x-p.z,p.x+p.z)*.1).r));
 }
 
 float hash(vec2 p){
@@ -201,7 +201,7 @@ void main()
 	float puddle=0.;
 	if(wet>0. && camdir(normal).y>.99){
 		puddle=puddlen(wpos)*wet*2.;
-		puddle=smoothstep(.3,.7,puddle);
+		puddle=smoothstep(.1,.8,puddle);
 	}
   gl_FragData[0]=gettex(texture,uv)*tintColor;
   gl_FragData[0].rgb= srgbToLinear(gl_FragData[0].rgb);//*step(abs(texres.x-texres.y),.0001);//*0.+blocklightdir;
@@ -244,11 +244,12 @@ vec4 nmp = gettex(normals,uv);
 	gl_FragData[4].r=(ao);
 	//gl_FragData[0].rgb = vec3(ao*ao);
 
-if(pow(puddle,.1)>=nmp.a){
+if(sqrt(puddle)>=nmp.a*nmp.a){
 	n=nrml;
 	if(PBRdata.g<.9)
 	PBRdata.xyz=vec3(.9,.134,0.);
 	nmp.a = pow(puddle,.1);
+	//gl_FragData[0].rgb=vec3(1,.1,.1);
 }
 
 #endif

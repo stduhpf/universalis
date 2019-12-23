@@ -49,6 +49,7 @@ vec3 lc=vec3(0.);
 #define SHADOW_SPACE_REFLECTION
 
 #define FAKE_REFRACTION
+//#define REFRACT_ALL_TRANSPARENTS
 
 #define SSR_STEPS 8 //[4 8 12 16 24 32 64]$
 #define SSR_REJECTION
@@ -375,9 +376,15 @@ void main(){
 
 
   float iswater = length(n)<.8?1.:0.;
+  #ifdef REFRACT_ALL_TRANSPARENTS
+  float isTransp = depthBlock(texture2D(depthtex1,tc).r)-depth>.01?1.:0.;
+  #else
+  float isTransp = iswater;
+  #endif
   #ifdef FAKE_REFRACTION
-  vec2 tct = tc+(iswater>.5?n.xy*n.z*1.3/max(depth,1.):vec2(0))*smoothstep(0.,3.,abs(depthBlock(texture2D(depthtex1,tc).r)-depth));
-  tct = tc+(iswater>.5?n.xy*n.z*1.3/max(depth,1.):vec2(0))*smoothstep(0.,3.,abs(depthBlock(texture2D(depthtex1,tct).r)-depth));
+  vec3 vn = camdir(n);
+  vec2 tct = tc+(isTransp>.5?vn.xy*vn.z*1.3/max(depth,1.):vec2(0))*smoothstep(0.,3.,abs(depthBlock(texture2D(depthtex1,tc).r)-depth));
+  tct = tc+(isTransp>.5?vn.xy*vn.z*1.3/max(depth,1.):vec2(0))*smoothstep(0.,3.,abs(depthBlock(texture2D(depthtex1,tct).r)-depth));
   if(texture2D(depthtex1,tct).r==texture2D(depthtex0,tct).r)
     tct = tc;
 #else
