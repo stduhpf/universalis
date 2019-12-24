@@ -200,7 +200,7 @@ void main()
 	float wet = wetness*smoothstep(.8,.93,lm.y);
 	float puddle=0.;
 	if(wet>0. && camdir(normal).y>.99){
-		puddle=puddlen(wpos)*wet*2.;
+		puddle=puddlen(wpos+view2cam(tbn*vec3(distpar,0.)))*wet*2.;
 		puddle=smoothstep(.1,.8,puddle);
 	}
   gl_FragData[0]=gettex(texture,uv)*tintColor;
@@ -248,10 +248,10 @@ if(sqrt(puddle)>=nmp.a*nmp.a){
 	n=nrml;
 	if(PBRdata.g<.9)
 	PBRdata.xyz=vec3(.9,.134,0.);
-	nmp.a = pow(puddle,.1);
-	//gl_FragData[0].rgb=vec3(1,.1,.1);
+	//nmp.a = pow(puddle,.25);
+	//gl_FragData[0].rgb=vec3(sin((wpos+view2cam((tbn)*vec3(distpar,(1.-nmp.a)*POM_DEPTH)))*300.).xz,.1);
 }
-
+	//gl_FragData[0].rgb=sin((wpos+view2cam((tbn)*vec3(distpar,(1.-nmp.a)*POM_DEPTH)))*200.).xyz;
 #endif
   gl_FragData[2]=vec4(.5+.5*n,1.);
 #ifdef SELF_SHADOW
