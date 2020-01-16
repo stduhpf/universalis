@@ -115,8 +115,8 @@ vec3 cosineDirection( in vec3 nor,float r, vec2 fc, int it)
 
     float seqf = haltonSeq(13,it);
 
-    float u = r*fract(haltonSeq(5,20)+seed+seqf);//hash13(vec3(fc, 78.233) + seed);
-    float v = TAU*fract(haltonSeq(7,20+12+int(seed*16.))-seqf);//hash13( vec3(fc,10.873 )+ seed);
+    float u = r*fract(haltonSeq(5,frameCounter)+seed+seqf);//hash13(vec3(fc, 78.233) + seed);
+    float v = TAU*fract(haltonSeq(7,frameCounter+12+int(seed*16.))-seqf);//hash13( vec3(fc,10.873 )+ seed);
     return  normalize(tbn*vec3(sqrt(u)*vec2(cos(v),sin(v)) , sqrt(1.0-u)));
 }
 

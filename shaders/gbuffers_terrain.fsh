@@ -207,9 +207,11 @@ void main()
   gl_FragData[0].rgb= srgbToLinear(gl_FragData[0].rgb);//*step(abs(texres.x-texres.y),.0001);//*0.+blocklightdir;
 
 	gl_FragData[0].rgb*=(1.-porosity*wet*.82+.05*puddle*puddle);
-	PBRdata.g = mix(PBRdata.g,.134,wet*(.5+.5*porosity)*float(PBRdata.g<.9));
-	PBRdata.r= mix(PBRdata.r,1.,wet*(wet*.5+.5*porosity));
-	PBRdata.r= mix(PBRdata.r,1.,puddle*puddle);
+	float roug =mix(PBRdata.r,1.,puddle*puddle*puddle*puddle);
+	roug= mix(roug,1.,wet*(wet*.5+.5*porosity));
+	PBRdata.g = mix(PBRdata.g,.134,pow(wet,1./abs(PBRdata.r-roug))*(.5+.5*porosity)*float(PBRdata.g<.9));
+	PBRdata.r= roug;
+
 	//PBRdata.r= 1.-sqrt(fract(wpos.x*.5));
 	gl_FragData[4]=vec4(1);
 	vec3 n = normal, nrml=normal;
@@ -257,7 +259,7 @@ if(sqrt(puddle)>=nmp.a*nmp.a){
 #ifdef SELF_SHADOW
 	gl_FragData[4].g = parallaxshadow(uv,normalize(shadowLightPosition)*tbn);
 #endif
-  gl_FragData[3]=vec4(lm,PBRdata.a<1.?PBRdata.a:0.,1.);
+  gl_FragData[3]=vec4(lm,PBRdata.a<1.?PBRdata.a*255./254.:0.,1.);
 
 
 	//gl_FragData[0].rg = texres;gl_FragData[0].b=0.;

@@ -222,8 +222,8 @@ void main(){
   float pd = texture2D(depthtex0,tc).r;
 
 
-  vec3 hc = vec3(gl_FragCoord.xy,mod(frameCounter*3.,PI)*50.);
-  dither =  hash13(hc-hc.zxy);
+  //vec3 hc = vec3(gl_FragCoord.xy,mod(frameCounter*3.,PI)*50.);
+  dither =  fract(dither32(gl_FragCoord.xy)+2.*haltonSeq(2,frameCounter));//hash13(hc-hc.zxy);
 
   //dither = pd<1.?dither:.35+.3*dither;
 
