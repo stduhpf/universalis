@@ -1,13 +1,15 @@
 #version 120
 
 #define NORMAL_MAPPING
-#define PBR
+
+#include "/common/pbrformats"
+
 
 uniform sampler2D texture;
 #ifdef NORMAL_MAPPING
 uniform sampler2D normals;
 #endif
-#ifdef PBR
+#if PBR_FORMAT
 uniform sampler2D specular;
 #endif
 #include "lib/colorspace.glsl"
@@ -24,7 +26,7 @@ void main()
 {
   vec2 lm = lmcoord.xy/256.;
   vec3 blocklightdir = tbn*normalize(vec3(dFdx(lm.x),-dFdy(lm.x),.005*(1.-sqrt(lm.x))));
-  #ifdef PBR
+  #if PBR_FORMAT
   vec4 PBRdata = texture2D(specular,texcoord.st);
   #else
   vec4 PBRdata = vec4(0);

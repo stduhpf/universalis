@@ -6,7 +6,9 @@
 #define POM
 #define SELF_SHADOW
 //#define DIRECTIONAL_LIGHTMAPS //super broken, not recommended
-#define PBR
+
+#include "/common/pbrformats"
+
 //#define AO_FIX
 #define PARALLAX_ALTER_DEPTHMAP
 #ifdef PARALLAX_ALTER_DEPTHMAP
@@ -15,7 +17,7 @@ layout (depth_greater) out float gl_FragDepth;
 
 uniform sampler2D texture;
 uniform sampler2D normals;
-#ifdef PBR
+#if PBR_FORMAT
 uniform sampler2D specular;
 #endif
 uniform sampler2D noisetex;
@@ -190,7 +192,7 @@ void main()
 	mat2 dlm = mat2(dFdx(lm.x),-dFdy(lm.x),dFdx(lm.y),-dFdy(lm.y));
   vec3 blocklightdir = normalize(vec3(dlm[0],2.*length(dlm[0])*(lm.x)));
 	vec3 skylightdir = normalize(vec3(dlm[1],3.*length(dlm[1])));
-  #ifdef PBR
+  #if PBR_FORMAT
   vec4 PBRdata =gettex(specular,uv);
   #else
   vec4 PBRdata = vec4(0);
@@ -226,11 +228,17 @@ void main()
 #ifdef NORMAL_MAPPING
 vec4 nmp = gettex(normals,uv);
 	vec3 nm = nmp.rgb*2.-1.;
-	float ao = length(nm);
-//	vec2 tb = (nm/ao).xy;
-//	vec3 nrm = vec3(tb,sqrt(1.-dot(tb,tb))); //test for 2 channels normals (is working fine)
-  n = tbn*(nm/ao);
-	//n=tbn*vec3(0,0,1);
+	float ao=1.;
+	#if PBR_FORMAT == labPBRv1_1
+	ao = length(nm);
+	n = (nm/ao);
+	#endif
+	#if PBR_FORMAT ==labPBRv1_2
+	vec2 tb = nm.xy;
+	ao = nm.z;
+	n = vec3(tb,sqrt(1.-dot(tb,tb))); //test for 2 channels normals (is working fine)
+	#endif
+	n=tbn*n;
 	#ifndef AO_FIX
 	ao*=ao;
 	#else

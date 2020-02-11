@@ -10,8 +10,8 @@ uniform sampler2D specular;
 #define POM
 #define SELF_SHADOW
 //#define DIRECTIONAL_LIGHTMAPS //super broken, not recommended
-#define PBR
 
+#include "/common/pbrformats"
 
 
 
@@ -302,7 +302,7 @@ void main()
 		mat2 dlm = mat2(dFdx(lm.x),-dFdy(lm.x),dFdx(lm.y),-dFdy(lm.y));
 		vec3 blocklightdir = normalize(vec3(dlm[0],2.*length(dlm[0])*(lm.x)));
 		vec3 skylightdir = normalize(vec3(dlm[1],3.*length(dlm[1])));
-		#ifdef PBR
+		#if PBR_FORMAT
 		vec4 PBRdata =gettex(specular,uv);
 		#else
 		vec4 PBRdata = vec4(0);

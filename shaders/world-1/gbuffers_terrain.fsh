@@ -6,13 +6,14 @@
 #define POM
 #define SELF_SHADOW
 //#define DIRECTIONAL_LIGHTMAPS //super broken, not recommended
-#define PBR
 //#define AO_FIX
+
+#include "/common/pbrformats"
 
 
 uniform sampler2D texture;
 uniform sampler2D normals;
-#ifdef PBR
+#if PBR_FORMAT
 uniform sampler2D specular;
 #endif
 uniform sampler2D noisetex;
@@ -105,7 +106,7 @@ void main()
   vec2 lm = lmcoord.xy/256.;
 	mat2 dlm = mat2(dFdx(lm.x),-dFdy(lm.x),dFdx(lm.y),-dFdy(lm.y));
   vec3 blocklightdir = normalize(vec3(dlm[0],2.*length(dlm[0])*(lm.x)));
-  #ifdef PBR
+	#if PBR_FORMAT
   vec4 PBRdata =gettex(specular,uv);
   #else
   vec4 PBRdata = vec4(0);
