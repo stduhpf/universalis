@@ -23,7 +23,7 @@ uniform float rainStrength;
 #define TEMPORAL_LIGHT_ACCUMULATION
 #define GLOBAL_ILLUMINATION
 #define GI_HQ_FILTER
-#define GI_DITHER_SCALE 2  //[1 2 3 4 5 6 7 8]
+#define GI_DITHER_SCALE 1  //[1 2 3 4 5 6 7 8]
 #ifdef GI_HQ_FILTER
 #define filtersize 2
 #else

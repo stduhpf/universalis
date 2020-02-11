@@ -34,16 +34,17 @@ vec3 neighborhoodClip(vec2 tc,vec3 previous,sampler2D current){
   float maxCg=max(maxCg2,max(aa.z,max(ac.z,max(ca.z,cc.z))));
 
 
-  minY=(minY+minY2)*.5;
-  maxY=(maxY+maxY2)*.5;
+  const float boxblend =.5;
+  minY=mix(minY,minY2,boxblend);
+  maxY=mix(maxY,maxY2,boxblend);
   float dY=(maxY-minY)*.5;
 
-  minCo=(minCo+minCo2)*.5;
-  maxCo=(maxCo+maxCo2)*.5;
+  minCo=mix(minCo,minCo2,boxblend);
+  maxCo=mix(maxCo,maxCo2,boxblend);
   float dCo=(maxCo-minCo)*.5;
 
-  minCg=(minCg+minCg2)*.5;
-  maxCg=(maxCg+maxCg2)*.5;
+  minCg=mix(minCg,minCg2,boxblend);
+  maxCg=mix(maxCg,maxCg2,boxblend);
   float dCg=(maxCg-minCg)*.5;
 
   vec3 med = .5*vec3(minY+maxY,minCo+maxCo,minCg+maxCg);

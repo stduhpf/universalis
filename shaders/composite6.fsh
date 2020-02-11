@@ -14,7 +14,7 @@ uniform sampler2D colortex0;
 uniform sampler2D depthtex1;
 uniform int frameCounter;
 
-#define TAA_STRENGTH .1 //[.05 .1 .15 .2 .25 .3 .4 .5 .75 .9 1.]
+#define TAA_STRENGTH .9 //[.0 .1 .2 .3 .4 .5 .6 .7 .75 .8 .85 .9 .95]
 
 #define AVGEXPS 20.
 #define expocurve 20.
@@ -60,7 +60,7 @@ void main(){
   pclipPos=pclipPos*.5+.5;
 
   vec3 lastc = floor(pclipPos.xy)==vec2(0.)?neighborhoodClip(tc,texture2D(colortex6, pclipPos.xy).rgb,colortex0):c;
-  c=mix(lastc,c,TAA_STRENGTH);
+  c=mix(c,lastc,TAA_STRENGTH);
   gl_FragData[1]=vec4(c,avgexp);
   gl_FragData[0] = vec4(c/expo,1.);
 

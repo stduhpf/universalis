@@ -32,13 +32,7 @@ varying vec2 tc;
 const float autorad = float(AO_RADIUS)*.715/sqrt(float(AO_SAMPLES+1)); //.715 is empirical
 
 
-#define GI_SAMPLES 8  //[1 2 4 8 12 16 32 64 128]
-#define GI_DITHER_SCALE 2  //[1 2 3 4 5 6 7 8]
-#define RSM_DIST .1 //[.01 .015 .02 .025 .05 .075 .1 .2 .3 .4 .5 .6 .7 .8 .9 1.]
-
-
 #define AMBIENT_OCCLUSION
-#define GLOBAL_ILLUMINATION
 
 #define GA 2.39996322973
 const mat2 Grot = mat2(cos(GA),sin(GA),-sin(GA),cos(GA));
