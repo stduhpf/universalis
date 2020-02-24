@@ -29,7 +29,6 @@ void main()
   #endif
   gl_FragData[0]=texture2D(texture,texcoord.st)*tintColor+entityColor;
   gl_FragData[0].rgb= srgbToLinear(gl_FragData[0].rgb);
-//  gl_FragData[0].rgb=PBRdata.rgb;
   gl_FragData[1]=vec4(PBRdata.rgb,1);
   float ao = 0.;
 
