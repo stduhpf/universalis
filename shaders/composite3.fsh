@@ -275,7 +275,7 @@ vec3 volumeLight(vec3 c,vec3 rd,vec3 p){
 
   p-=st*fract(dit);
 
-  vec3 fogColor = vec3(.058,.063,.08)*(1.+length(lightcol));
+  vec3 fogColor = vec3(.058,.063,.08)*(length(lightcol));
   float rayl = saturate(mix(dot(normalize(rd),lightDir),1.,.3));
   rayl=2.*pow(rayl,8.);
   rayl+=.6;
@@ -317,7 +317,7 @@ vec3 volumeLightSky(vec3 c,vec3 rd,vec3 p0){
   float stlen = length(st);
 
 
-  vec3 fogColor = vec3(.058,.063,.08)*(1.+length(lightcol));
+  vec3 fogColor = vec3(.058,.063,.08)*(length(lightcol));
   float rayl = saturate(mix(dot(normalize(rd),lightDir),1.,.3));
   rayl=2.*pow(rayl,8.);
   rayl+=.6;

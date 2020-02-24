@@ -1,1 +1,2 @@
-float ambi = .5*(.9*(smoothstep(13000.,12000.,float(worldTime))+smoothstep(23000.,24000.,float(worldTime))));
+float wta = abs(abs(float(worldTime)-17990)-5220);
+float ambi = .5*(.9*(smoothstep(0.,1000.,wta))+.1);

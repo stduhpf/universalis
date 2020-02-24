@@ -20,6 +20,8 @@ uniform int frameCounter;
 #define expocurve 20.
 #define EXPOSURE_SPEED .01 //[.001 .0025 .005 .0075 .01 .015 .02 .05 1. 2. 100.]
 
+#define MAX_EXPOSURE .25 // [0 .05 .1 .15 .2 .25 .3 .35 .4 .45 .5 .6 .7 .8 .9 1. 1.5 2.]
+
 #define AUTO_EXPOSURE
 /*DRAWBUFFERS:06*/
 void main(){
@@ -43,7 +45,8 @@ void main(){
     avgexp=pow(avgexp,expocurve);
     avgexp=mix(avgexp,expo,exp2(-EXPOSURE_SPEED));
   }
-  expo*=15.;
+  //avgexp = max(MAX_EXPOSURE,avgexp);
+  expo= max(MAX_EXPOSURE,expo)*15.;
   #endif
 
   vec3 c = texture2D(colortex0,tc).rgb;
