@@ -3,7 +3,6 @@
 #extension GL_ARB_gpu_shader4 : enable
 
 #define NORMAL_MAPPING
-#define POM
 #define SELF_SHADOW
 //#define DIRECTIONAL_LIGHTMAPS //super broken, not recommended
 
@@ -55,10 +54,7 @@ vec2 dcdy = dFdy(texcoord.rg);
 
 vec4 gettex(sampler2D t, vec2 v)
 {
-	v =(v-midTexCoord)/texres+.5;
-	v=(fract(v)-.5)*texres+midTexCoord;
-	return texture2DGradARB(t,v,dcdx,dcdy);
-
+	return texture2D(t,v);
 }
 
 
@@ -182,11 +178,9 @@ vec4 voro(inout vec2 uv){
 /*DRAWBUFFERS:03271*/
 void main()
 {
-	#ifdef POM
-  vec2 uv = parallaxpos(texcoord.st,vpos*tbn);
-	#else
+
 	vec2 uv = texcoord.st;
-	#endif
+
 	vec2 distpar= vec2(uv-texcoord.st)/tt;
   vec2 lm = lmcoord.xy/256.;
 	mat2 dlm = mat2(dFdx(lm.x),-dFdy(lm.x),dFdx(lm.y),-dFdy(lm.y));
@@ -273,9 +267,5 @@ if(sqrt(puddle)>=nmp.a*nmp.a){
 	//gl_FragData[0].rgb=vec3(getpa(texture,uv),0.);
 	//gl_FragData[0].rgb*=step(224, lmcoord.x);
 	gl_FragData[1]=vec4(PBRdata.rgb,1);
-	#ifdef PARALLAX_ALTER_DEPTHMAP
-	#ifdef POM
-	gl_FragDepth = blockToFrag(depthBlock(gl_FragCoord.z)+sqrt(dot(distpar,distpar)+POM_DEPTH*POM_DEPTH*(1.-nmp.a)*(1.-nmp.a)));
-	#endif
-	#endif
+
 }
