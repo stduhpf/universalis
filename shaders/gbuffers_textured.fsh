@@ -42,18 +42,18 @@ void main()
     	ao=1.;
     	#if PBR_FORMAT ==labPBRv1_2
     	vec2 tb = nm.xy;
-    	ao = nm.z;
+    	ao = abs(nm.z);
     	vec3 n = vec3(tb,sqrt(1.-dot(tb,tb))); //test for 2 channels normals (is working fine)
     	#else
-    	ao = (length(nm));
+    	ao = length(nm);
     	vec3 n = (nm/ao);
       ao=sqrt(ao);
     	#endif
     	n=tbn*n;
-    gl_FragData[2]=vec4(n*.5+.5,1.);
+    gl_FragData[2]=vec4(n*.5+.5,gl_FragData[0].a);
     //lm*=ao;
   #else
-  gl_FragData[2]=vec4(.5+.5*normal,1.);
+  gl_FragData[2]=vec4(.5+.5*normal,gl_FragData[0].a);
   #endif
   gl_FragData[3]=vec4(lm,PBRdata.a<1.?PBRdata.a:0.,1.);
   //gl_FragData[0].rgb*=ao*ao;

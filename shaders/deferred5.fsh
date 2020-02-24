@@ -77,7 +77,6 @@ void main() {
   vec3 boltc = bolt*ao*lmcoord.y*vec3(.1,.01,.4);
   #include "lib/ambcol.glsl"
   ao*=.05+lmcoord.y*ambi;
-  #ifdef GLOBAL_ILLUMINATION
   vec3 newgi = ambientCol*ao+boltc;
 
 
@@ -88,6 +87,7 @@ void main() {
     float r_phi = 1.0;
     float n_phi = 0.5;
     float p_phi = 0.25;
+    #ifdef GLOBAL_ILLUMINATION
 
     vec3 cval = texture2D(colortex4, tc).xyz;
     vec3 nval = texture2D(gnormal, tc).xyz;
@@ -117,8 +117,6 @@ void main() {
       }
     }
   newgi += sum/cum_w;
-  #else
-        vec3 newgi = ambientCol*ao;
   #endif
 #ifdef TEMPORAL_LIGHT_ACCUMULATION
     float pixdpth = texture2D(depthtex1,tc).r;

@@ -225,10 +225,10 @@ void main()
 		d= .1*d*cos(50.*a.x- frameTimeCounter *24.+phi)*exp( -5.*a.x);
 		nrml=tbn*normalize(vec3(d.x,d.y,1.));
 	}
+	float ao=1.;
 #ifdef NORMAL_MAPPING
 vec4 nmp = gettex(normals,uv);
 	vec3 nm = nmp.rgb*2.-1.;
-	float ao=1.;
 	#if PBR_FORMAT ==labPBRv1_2
 	vec2 tb = nm.xy;
 	ao = nm.z;
@@ -274,8 +274,6 @@ if(sqrt(puddle)>=nmp.a*nmp.a){
 	//gl_FragData[0].rgb*=step(224, lmcoord.x);
 	gl_FragData[1]=vec4(PBRdata.rgb,1);
 	#ifdef PARALLAX_ALTER_DEPTHMAP
-	#ifdef POM
 	gl_FragDepth = blockToFrag(depthBlock(gl_FragCoord.z)+sqrt(dot(distpar,distpar)+POM_DEPTH*POM_DEPTH*(1.-nmp.a)*(1.-nmp.a)));
-	#endif
 	#endif
 }
