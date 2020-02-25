@@ -16,6 +16,7 @@ attribute vec4 mc_Entity;
 attribute vec2 mc_midTexCoord;
 uniform float frameTimeCounter;
 uniform float rainStrength;
+uniform vec3 cameraPosition;
 
 #include "lib/wind.glsl"
 
@@ -29,7 +30,7 @@ void main()
   if(mc_Entity.x == 30){
     gl_Position = shadowModelViewInverse*gl_Position;
 
-		gl_Position.xyz+=wind(gl_Position.xyz);
+		gl_Position.xyz+=wind(gl_Position.xyz+cameraPosition);
 
     gl_Position = shadowModelView*gl_Position;
 	}
@@ -39,7 +40,7 @@ void main()
 
 		bool istop = (tc.t < mc_midTexCoord.t);
 		if(istop){
-			gl_Position.xyz+=wind(gl_Position.xyz);
+			gl_Position.xyz+=wind(gl_Position.xyz+cameraPosition);
 		}
     gl_Position = shadowModelView*gl_Position;
 	}
