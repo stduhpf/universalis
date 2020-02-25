@@ -59,6 +59,7 @@ wpos = mat3(gbufferModelViewInverse) * vpos +cameraPosition;
 	}
 
 	gl_Position = gl_ProjectionMatrix*gl_Position;
+	
 	gl_Position.xy += 2.*(offset-.5)*gl_Position.w/resolution;
 
 	vec3 tangent = normalize(gl_NormalMatrix*normalize(at_tangent.xyz));
