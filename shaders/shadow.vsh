@@ -12,13 +12,38 @@ varying mat3 tbn;
 
 attribute vec4 at_tangent;
 #endif
+attribute vec4 mc_Entity;
+attribute vec2 mc_midTexCoord;
+uniform float frameTimeCounter;
+uniform float rainStrength;
+
+#include "lib/wind.glsl"
 
 void main()
 {
   normal= normalize(gl_NormalMatrix*gl_Normal);
 
   tc = gl_MultiTexCoord0.xy;
-  gl_Position = gl_ProjectionMatrix *gl_ModelViewMatrix*gl_Vertex;
+  gl_Position = gl_ModelViewMatrix*gl_Vertex;
+
+  if(mc_Entity.x == 30){
+    gl_Position = shadowModelViewInverse*gl_Position;
+
+		gl_Position.xyz+=wind(gl_Position.xyz);
+
+    gl_Position = shadowModelView*gl_Position;
+	}
+
+	if(mc_Entity.x == 31 ){
+    gl_Position = shadowModelViewInverse*gl_Position;
+
+		bool istop = (tc.t < mc_midTexCoord.t);
+		if(istop){
+			gl_Position.xyz+=wind(gl_Position.xyz);
+		}
+    gl_Position = shadowModelView*gl_Position;
+	}
+gl_Position = gl_ProjectionMatrix *gl_Position;
 
   gl_Position.xyz = stransformcam(gl_Position.xyz);
 
