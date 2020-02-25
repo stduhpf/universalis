@@ -7,7 +7,7 @@ vec3 wind (vec3 pos){
 
   float speed = 1.5;
 
-  float phase = speed*frameTimeCounter-dot(pos,dirp);
+  float phase = speed*frameTimeCounter+dot(pos,dirp);
   float pressure = (sin(phase)*(1.+rainStrength)+.5*sin(phase*2.3015)+.18*cos(phase*3.953))/1.78;
 
 	return dird*pressure*pressure*a;
