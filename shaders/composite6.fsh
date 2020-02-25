@@ -20,7 +20,7 @@ uniform int frameCounter;
 #define expocurve 20.
 #define EXPOSURE_SPEED .01 //[.001 .0025 .005 .0075 .01 .015 .02 .05 1. 2. 100.]
 
-#define MAX_EXPOSURE .25 // [0 .05 .1 .15 .2 .25 .3 .35 .4 .45 .5 .6 .7 .8 .9 1. 1.5 2.]
+#define MAX_EXPOSURE .075 // [0 .0125 .025 .05 .075 .1 1.25 1.5 1.75 .2 .25 .3 .35 .4 .45 .5 .6 .7 .8 .9 1. 1.5 2.]
 
 #define AUTO_EXPOSURE
 /*DRAWBUFFERS:06*/

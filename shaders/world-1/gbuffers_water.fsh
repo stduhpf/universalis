@@ -245,10 +245,7 @@ uniform int worldTime;
 	}
 	#endif
 	#include "../lib/essentials.glsl"
-	uniform sampler2D shadowtex1;
-	#include "../lib/shadowtransform.glsl"
 
-	#include "../lib/shadow_lite.glsl"
 	#include "../lib/lmcol.glsl"
 
 //}
@@ -322,7 +319,7 @@ void main()
 
 		#include "../lib/ambcol.glsl"
 
-		gl_FragData[0].rgb*=mix(vec3(1.),diffuse(normalize(vpos),normalize(shadowLightPosition),n,pow(1.-PBRdata.r,2.))*lightCol*shadow3(world2cam(p))+ambientCol*lm.y*ambi+TorchColor*lm.x,gl_FragData[0].a);
+		gl_FragData[0].rgb*=mix(vec3(1.),ambientCol*lm.y*ambi+TorchColor*lm.x,gl_FragData[0].a);
 		gl_FragData[1]=vec4(1,0.,1.,1.);
 	}
 	gl_FragData[4]=vec4(lm,0.,1.);

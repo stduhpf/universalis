@@ -12,7 +12,7 @@ const mat2 Grot = mat2(cos(GA),sin(GA),-sin(GA),cos(GA));
 
 #define PCSS
 //#define VOLUME_PCSS
-const int		shadowMapResolution	= 1024; //[512 1024 2048 4096]
+const int		shadowMapResolution	= 2048; //[512 1024 2048 4096]
 const float shadowDistance = 64.; //[16. 32. 64. 128. 256.]
 
 #define PCSS_STRENGTH 1. //[0. .25 .5 1. 1.5 2. 2.5 3. 3.5 4.] //0 disables PCSS, but keeps the filtering
