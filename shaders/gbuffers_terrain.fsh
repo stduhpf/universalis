@@ -5,6 +5,8 @@
 #define NORMAL_MAPPING
 #define POM
 #define SELF_SHADOW
+
+#define FORCE_SSS //enables subsurface scattering on leaves and grass, overwriting the ressource pack sss
 //#define DIRECTIONAL_LIGHTMAPS //super broken, not recommended
 
 #include "/common/pbrformats"
@@ -32,6 +34,7 @@ in vec4 lmcoord;
 in mat3 tbn;
 in vec3 vpos;
 in vec2 midTexCoord;
+in flat int vegetal;
 uniform vec3 shadowLightPosition;
 uniform float frameTimeCounter;
 uniform int frameCounter;
@@ -199,6 +202,11 @@ void main()
   #endif
 	float porosity = PBRdata.b<.251?PBRdata.b*4.:0.;
 	PBRdata.b=saturate((PBRdata.b-.25)/.75);
+	#ifdef FORCE_SSS
+	if(vegetal>0){
+		PBRdata.b=.7;
+	}
+	#endif
 	float wet = wetness*smoothstep(.8,.93,lm.y);
 	float puddle=0.;
 	if(wet>0. && camdir(normal).y>.99){

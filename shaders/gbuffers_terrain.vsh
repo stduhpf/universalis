@@ -9,6 +9,7 @@ out vec3 vpos;
 out vec2 midTexCoord;
 out vec2 texres;
 out vec3 wpos;
+out flat int vegetal;
 attribute vec4 at_tangent;
 attribute vec2 mc_midTexCoord;
 attribute vec3 mc_Entity;
@@ -27,6 +28,7 @@ uniform float rainStrength;
 
 void main()
 {
+	vegetal=0;
 	midTexCoord = mc_midTexCoord;
 	normal= normalize(gl_NormalMatrix*gl_Normal);
 	texcoord = gl_MultiTexCoord0;
@@ -41,6 +43,7 @@ vpos =gl_Position.xyz;
 wpos = mat3(gbufferModelViewInverse) * vpos +cameraPosition;
 
 	if(mc_Entity.x == 30){
+		vegetal++;
 		gl_Position = gbufferModelViewInverse*gl_Position;
 
 		gl_Position.xyz+=wind(wpos);
@@ -49,6 +52,7 @@ wpos = mat3(gbufferModelViewInverse) * vpos +cameraPosition;
 	}
 
 	if(mc_Entity.x == 31){
+		vegetal++;
 		gl_Position = gbufferModelViewInverse*gl_Position;
 
 		bool istop = (texcoord.t < mc_midTexCoord.t)||mc_Entity.x == 32;
@@ -59,7 +63,7 @@ wpos = mat3(gbufferModelViewInverse) * vpos +cameraPosition;
 	}
 
 	gl_Position = gl_ProjectionMatrix*gl_Position;
-	
+
 	gl_Position.xy += 2.*(offset-.5)*gl_Position.w/resolution;
 
 	vec3 tangent = normalize(gl_NormalMatrix*normalize(at_tangent.xyz));
