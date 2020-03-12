@@ -16,7 +16,7 @@ uniform vec3 cameraPosition;
 
 uniform int frameCounter;
 
-#include "lib/essentials.glsl"
+#include "/lib/essentials.glsl"
 
 uniform mat4 gbufferModelViewInverse;
 
