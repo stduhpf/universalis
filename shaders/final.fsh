@@ -12,6 +12,7 @@ uniform sampler2D gcolor;
 uniform sampler2D colortex2;
 uniform sampler2D colortex1;
 uniform sampler2D colortex0;
+uniform sampler2D colortex5;
 uniform float frameTimeCounter;
 varying vec2 tc;
 
@@ -37,6 +38,9 @@ const int colortex2Format = RGBA16;
 #define None 0
 #define Hable 1
 #define ACES 2
+
+//#define LUT  //lowering contrast is advised
+#define LUT_TABLE 0 //[0 1 2 3 4 5 6 7 8 9] //the tables are taken from rutherin's raspberry shader (https://rutherin.netlify.com/) you can change them in (/img/Luts.png)
 
 #define BLOOM
 
@@ -112,6 +116,14 @@ vec3 sharptex(sampler2D s, vec2 tc){
   texture2D(s,tc+r*vec2(-1,0)).rgb*sh;
 }
 
+vec3 applyLUT(vec3 c,int id){
+  c=c*63.+dither128(tc);
+  c = floor(c);
+  c = clamp(c,vec3(0),vec3(63.));
+  vec2 b = floor(vec2(mod(c.b,8.),floor(c.b/8.)));
+  return texture2D(colortex5, vec2(0.,float(id)/10.)+(b*64.+c.rg+.5)/vec2(512.,512.*10.)).rgb;
+}
+
 #define Last_Pass
 void main(){
   #ifdef BLOOM
@@ -124,6 +136,9 @@ void main(){
 
   #if (tonemap!=None)
   gl_FragColor.rgb = Tonemap(gl_FragColor.rgb);
+  #endif
+  #ifdef LUT
+  gl_FragColor.rgb = applyLUT(gl_FragColor.rgb,LUT_TABLE);
   #endif
   gl_FragColor.rgb = linearToSRGB(gl_FragColor.rgb);
 }
