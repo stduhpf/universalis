@@ -1,5 +1,5 @@
 vec3 wind (vec3 pos){
-	vec3 dirp = vec3(1.,-.01,1.4)*.1;
+	vec3 dirp = vec3(1.,-.01,1.4)*.2;
 
   vec3 dird = cos(frameTimeCounter*vec3(.99635256,1.01524,.345)*.5-pos*.1);
 	//vec3 dird = vec3(cos(frameTimeCounter*.1-pos.x),sin(frameTimeCounter*.120126-pos.y),.5*cos(frameTimeCounter*.378+.01-pos.z));
