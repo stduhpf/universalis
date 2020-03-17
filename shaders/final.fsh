@@ -117,7 +117,7 @@ vec3 sharptex(sampler2D s, vec2 tc){
 }
 
 vec3 applyLUT(vec3 c,int id){
-  c=c*63.+dither128(tc);
+  c=c*62.+dither64(gl_FragCoord.xy);
   c = floor(c);
   c = clamp(c,vec3(0),vec3(63.));
   vec2 b = floor(vec2(mod(c.b,8.),floor(c.b/8.)));
