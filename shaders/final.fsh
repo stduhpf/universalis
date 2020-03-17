@@ -1,9 +1,9 @@
 #version 400
 
-#include "lib/colorspace.glsl"
-#include "lib/essentials.glsl"
-#include "lib/bloom.glsl"
-#include "lib/temp.glsl"
+#include "/lib/colorspace.glsl"
+#include "/lib/essentials.glsl"
+#include "/lib/bloom.glsl"
+#include "/lib/temp.glsl"
 
 
 // temporal buffers: 5 6, don't touch
@@ -111,7 +111,6 @@ vec3 sharptex(sampler2D s, vec2 tc){
   texture2D(s,tc+r*vec2(0,-1)).rgb*sh-
   texture2D(s,tc+r*vec2(-1,0)).rgb*sh;
 }
-
 
 #define Last_Pass
 void main(){
