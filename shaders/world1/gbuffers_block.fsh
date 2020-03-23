@@ -71,21 +71,9 @@ void main()
 
 	gl_FragData[4]=vec4(1);
 	vec3 n = normal, nrml=normal;
-
+	float ao=1.;
 #ifdef NORMAL_MAPPING
-	vec4 nmp = gettex(normals,uv);
-	vec3 nm = nmp.rgb*2.-1.;
-	float ao = length(nm);
-//	vec2 tb = (nm/ao).xy;
-//	vec3 nrm = vec3(tb,sqrt(1.-dot(tb,tb))); //test for 2 channels normals (is working fine)
-  n = tbn*(nm/ao);
-	//n=tbn*vec3(0,0,1);
-	#ifndef AO_FIX
-	ao*=ao;
-	#else
-	ao=sqrt(ao);
-	ao = saturate(ao);
-	#endif
+	#include "/lib/normals.glsl"
 	#ifdef DIRECTIONAL_LIGHTMAPS
 	float rgh = pow(1.-PBRdata.r,2.);
   lm.x=min(blocklightdir.z>.0?diffuse(vpos,blocklightdir,n*tbn,rgh)*(parallaxshadow(uv,blocklightdir)*.75+.25):1.,lm.x);

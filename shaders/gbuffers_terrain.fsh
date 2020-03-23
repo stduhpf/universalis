@@ -23,9 +23,9 @@ uniform sampler2D normals;
 uniform sampler2D specular;
 #endif
 uniform sampler2D noisetex;
-#include "lib/colorspace.glsl"
-#include "lib/trans.glsl"
-#include "lib/essentials.glsl"
+#include "/lib/colorspace.glsl"
+#include "/lib/trans.glsl"
+#include "/lib/essentials.glsl"
 
 in vec3 normal;
 in vec4 texcoord;
@@ -235,23 +235,7 @@ void main()
 	}
 	float ao=1.;
 #ifdef NORMAL_MAPPING
-vec4 nmp = gettex(normals,uv);
-	vec3 nm = nmp.rgb*2.-1.;
-	#if PBR_FORMAT ==labPBRv1_2
-	vec2 tb = nm.xy;
-	ao = nm.z;
-	n = vec3(tb,sqrt(1.-dot(tb,tb))); //test for 2 channels normals (is working fine)
-	#else
-	ao = length(nm);
-	n = (nm/ao);
-	#endif
-	n=tbn*n;
-	#ifndef AO_FIX
-	ao*=ao;
-	#else
-	ao=sqrt(ao);
-	ao = saturate(ao);
-	#endif
+	#include "/lib/normals.glsl"
 	#ifdef DIRECTIONAL_LIGHTMAPS
 	float rgh = pow(1.-PBRdata.r,2.);
   lm.x=min(blocklightdir.z>.0?diffuse(vpos,blocklightdir,n*tbn,rgh)*(parallaxshadow(uv,blocklightdir)*.75+.25):1.,lm.x);

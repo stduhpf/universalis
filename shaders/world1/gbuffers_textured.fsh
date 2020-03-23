@@ -37,19 +37,10 @@ void main()
   gl_FragData[1]=vec4(PBRdata.rgb,1);
   float ao = 1.;
   #ifdef NORMAL_MAPPING
-    vec4 nmp = texture2D(normals,texcoord.st);
-    	vec3 nm = nmp.rgb*2.-1.;
-    	ao=1.;
-    	#if PBR_FORMAT ==labPBRv1_2
-    	vec2 tb = nm.xy;
-    	ao = abs(nm.z);
-    	vec3 n = vec3(tb,sqrt(1.-dot(tb,tb))); //test for 2 channels normals (is working fine)
-    	#else
-    	ao = length(nm);
-    	vec3 n = (nm/ao);
-      ao=sqrt(ao);
-    	#endif
-    	n=tbn*n;
+    #define gettex texture2D
+    vec2 uv = texcoord.st;
+    vec3 n;
+    #include "/lib/normals.glsl"
     gl_FragData[2]=vec4(n*.5+.5,gl_FragData[0].a);
     //lm*=ao;
   #else

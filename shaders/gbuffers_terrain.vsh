@@ -19,12 +19,12 @@ uniform vec3 cameraPosition;
 uniform int frameCounter;
 uniform float frameTimeCounter;
 
-#include "lib/essentials.glsl"
+#include "/lib/essentials.glsl"
 
 uniform mat4 gbufferModelViewInverse;
 uniform mat4 gbufferModelView;
 uniform float rainStrength;
-#include "lib/wind.glsl"
+#include "/lib/wind.glsl"
 
 void main()
 {

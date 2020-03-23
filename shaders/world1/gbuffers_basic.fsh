@@ -36,9 +36,10 @@ void main()
   gl_FragData[1]=vec4(PBRdata.rgb,1);
   float ao = 0.;
 #ifdef NORMAL_MAPPING
-  vec3 nm = texture2D(normals,texcoord.st).rgb*2.-1.;
-  ao = length(nm);
-  vec3 n = tbn*(nm/ao);
+  #define gettex texture2D
+  vec2 uv = texcoord.st;
+  vec3 n;
+  #include "/lib/normals.glsl"
   gl_FragData[2]=vec4(n*.5+.5,1.);
   lm*=ao*ao;
   //lm.x*=max(0.,dot(n,blocklightdir));
