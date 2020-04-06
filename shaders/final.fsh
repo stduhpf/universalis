@@ -38,9 +38,13 @@ const int colortex2Format = RGBA16;
 #define None 0
 #define Hable 1
 #define ACES 2
+#define Linear 0
+#define Gamma 1
+#define LUT_SPACE Gamma //[Linear Gamma]
 
 //#define LUT  //lowering contrast is advised
-#define LUT_TABLE 0 //[0 1 2 3 4 5 6 7 8 9] //the tables are taken from rutherin's raspberry shader (https://rutherin.netlify.com/) you can change them in (/img/Luts.png)
+#define changing -1
+#define LUT_TABLE 0 //[0 1 2 3 4 5 6 7 8 9 changing] //the tables are taken from rutherin's raspberry shader (https://rutherin.netlify.com/) you can change them in (/img/Luts.png)
 
 #define BLOOM
 
@@ -138,7 +142,16 @@ void main(){
   gl_FragColor.rgb = Tonemap(gl_FragColor.rgb);
   #endif
   #ifdef LUT
-  gl_FragColor.rgb = applyLUT(gl_FragColor.rgb,LUT_TABLE);
-  #endif
+  #if LUT_SPACE == Gamma
   gl_FragColor.rgb = linearToSRGB(gl_FragColor.rgb);
+  #endif
+  gl_FragColor.rgb = applyLUT(gl_FragColor.rgb,LUT_TABLE==changing?int(frameTimeCounter/4.)%10:LUT_TABLE);
+  #if LUT_SPACE == Linear
+  gl_FragColor.rgb = linearToSRGB(gl_FragColor.rgb);
+  #endif
+  #define GAMMA_LUT
+
+  #else
+  gl_FragColor.rgb = linearToSRGB(gl_FragColor.rgb);
+  #endif
 }
