@@ -258,7 +258,7 @@ void main(){
     c=pd<1.?volumeLight(c,rd):volumeLightSky(c,rd);
     //fogColor = vol.rgb;
     #else
-    float vol=1.;
+    float vol=1.-exp2(-depth*.004);
     c=mix(c,fogColor,vol);
     #endif
 

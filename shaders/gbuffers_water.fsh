@@ -266,9 +266,10 @@ void main()
 
 	vec2 tc = texcoord.st;
 	vec3 p = position;
-  #ifndef PILLAR_WATER
-	#ifdef WATER_PARALLAX
+
   if(iswater){
+		#ifndef PILLAR_WATER
+		#ifdef WATER_PARALLAX
     p = parallaxposw(p,normalize(vpos)*tbn);
     tc =iswater? midTexCoord+(fract(p.xz)-.5)*texres:tc;
 		#endif
@@ -295,8 +296,7 @@ void main()
 		gl_FragData[2]=vec4(normalize(n)*.25+.5,1.);
 
 		gl_FragData[3]=vec4(.9,.134,0.,1.);
-  }
-	else{
+  }else{
 		vec2 uv = texcoord.st;
 
 		mat2 dlm = mat2(dFdx(lm.x),-dFdy(lm.x),dFdx(lm.y),-dFdy(lm.y));

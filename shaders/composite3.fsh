@@ -447,8 +447,9 @@ void main(){
 
           c=mix(.1*vec3(.05,.07,.3)*lightcol,c,mix(1.,sh,.3));
         }else{
+          #ifdef VOLUMETRIC_LIGHT
           c= pd2<1.?volumeLight(c,screen2cam(vec3(tc,pd2)),p):volumeLightSky(c,screen2cam(vec3(tc,pd2)),p);
-
+          #endif
         }
     }
 

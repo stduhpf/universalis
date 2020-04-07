@@ -76,9 +76,26 @@ screen.LIGHING = Lighting options
 
 
 screen.WATER = Water options
+  option.WATER_TEXTURE = Textured water
+  option.WATER_PARALLAX = Parallax waves
+    option.WATER_PARALLAX.comment = fake 3D waves can have a small performace impact
+  option.WATER_PARALLAX_PRECISION = Parallax waves precison
+    option.WATER_PARALLAX_PRECISION.comment = Lower values increase the quality of the 3D effect on waves
+  option.WATER_HEIGHT = Wave height
+  option.WAVE_NOISE_OCTAVES = Wave details
+
+  option.VOLUMETRIC_WATER = Water fog
+  option.WATER_THICCNESS = Water fog density
+  option.WATER_ABSORB = Light attenuation
+    option.WATER_ABSORB.comment = Darkening of underwater shadows dependant on depth
+  option.WATER_VOL_STEPS = Volumetric water marching steps
+
+  option.PILLAR_WATER = Fake voxel water (Experimental)
 
 
 screen.SKY = Skybox parameters
+  option.SUN_BRIGHNESS = Sun brightness
+  option.MOON_BRIGHNESS = Moon brightness
 
 
 screen.SURFACE = PBR options and texture format
