@@ -1,0 +1,95 @@
+screen.CAMERA = Camera properties
+  screen.DOF = Depth of Field (DOF)
+    option.BETTER_DOF = Radius correction
+      option.BETTER_DOF.comment = Takes into account the depth of the surrounding samples witha very slight performance hit and some ignored samples
+    option.TEMPORAL_DOF = Jittered offset
+    option.DOF_IT = Samples
+      option.DOF_IT.comment = More samples means better looking Bokeh, but at the cost of a performance hit (linear with the sample amount)
+    option.DOF_APERTURE = Aperture radius
+      option.DOF_APERTURE.comment = Only affects the Bokeh, not the exposure. The bigger the radius, the blurrier the image will be
+    option.DOF_FOCAL = Focal length
+      option.DOF_FOCAL.comment = Does not affect FOV, changes the minimal focal distance of the camera as well as the amount of blur.
+    option.DOF_CLOSEST = Closest focus
+      option.DOF_CLOSEST.comment = How close the the focal point can the camera autofocus go.
+    option.ANISOTROPIC_DOF = Lens distorsion effect
+      option.ANISOTROPIC_DOF.comment = Distort the shape of tge blur near the edges of the image
+    option.ANISOTROPIC_DOF_DEFORMATION = Distorsion strength
+
+  option.TONEMAP = Tonemap
+
+  option.BLOOM = Bloom
+    option.BLOOM.comment = Light "blooming" around bright objects
+  option.BLOOM_STRENGTH = Bloom brightness
+
+  option.AUTO_EXPOSURE = Automatic exposure
+    option.AUTO_EXPOSURE.comment = adjusts the overall brightness of the image
+  option.EXPOSURE_SPEED = Exposure reactivity
+    option.EXPOSURTE_SPEED.comment = Controls at which speed the automatic exposure adjusts the bightnesss
+  option.EXPOSURE_MULTIPLIER = Target brightness
+    option.EXPOSURE_MULTIPLIER.comment = Controls how bright the final image is. Can also be used as a manual exposure if automatic exposure is disabled.
+  option.MAX_EXPOSURE = Darkest point
+    option.MAX_EXPOSURE.comment = Intensity of the minimal brightness the automatic exposure can adjust to.
+
+
+screen.LIGHING = Lighting options
+  screen.SHADOWS = Shadows
+    option.PCSS = PCSS soft shadows
+      option.PCSS.comment = Percentage Closer Soft Shadows is a techenique used to get somewhat realistic variable penumbra shadws using a shadowmap.
+    option.PCSS_STRENGTH = Penumbra size
+      option.PCSS_STRENGTH.comment = The value should only depend on the size of the sun, but it can be nice to play with it. A value of 0 would disable PCSS, but allows to keep shadow filtering.
+    option.PCSS_SAMPLES = Samples
+      option.PCSS_SAMPLES.comment = more samples means smoother and less noisy penumbra, but lowers the performance.
+    option.PCSS_ACCURACY = PCSS Kernell size
+      option.PCSS_ACCURACY.comment = Higher values can improve slightly the accuracy of the penumbra in some cases, but with a pretty big performance hit.
+    option.SHADOW_BIAS = Shadow deformation bias
+      option.SHADOW_BIAS.comment = The lower the value, the higher the quality of the shadows will be near you, and the worst it will be far away.
+    option.shadowMapResolution = Shadowmap Resolution
+    option.shadowDistance = Shadow distance
+      option.shadowDistance.comment = the effect is kinda simillar to the shadow deformation bias
+
+  screen.AMBIENT = Ambient occlusion (AO)
+    screen.AMBIENT.comment = Since the global Illumination approximation used here is not sufficent, ambient lighting (and ambient occlusion) is used to fake the light from lightbounces and the skylight.
+    option.AMBIENT_OCCLUSION = SSAO
+      option.AMBIENT_OCCLUSION.comment = Screen Space Ambient Occlusion. These thecheniques uses the information from surrounding pixels to approximate AO. The actual techenique used here is actualy called "Alchemy SSAO"
+    option.AO_SAMPLES = AO Samples
+      option.AO_SAMPLES.comment = More samples means better AO, but at the cost of some performance
+    option.AO_RADIUS = AO Radius
+      option.AO_RADIUS.comment = how far do the occluders cast ambient shadows on objects
+
+  screen.GI = Global Illumination
+    option.GLOBAL_ILLUMINATION = Global Illumination (RSM)
+      option.GLOBAL_ILLUMINATION.comment = An approximation of single-bounce Global Illumination using the Reflective Shadow Map techenique. The main issue is that the reflected light can leak through walls.
+    option.GI_SAMPLES = Samples
+      option.GI_SAMPLES.comment = More samples means better GI, but at the cost of some performance
+    option.GI_HQ_FILTER = Better spatial filter
+      option.GI_HQ_FILTER.comment = can help with reducing the noise but with a significant performance impact. You're better off increasing samples instead in a first place
+    option.GI_DITHER_SCALE = Dithering resolution divider
+      option.GI_DITHER_SCALE.comment = Higher values can help a lot with performance but will also produce a lot more noise in the image. Use this option if you really want gi but the performance is too bad.
+    option.RSM_DIST = Bounced light distance
+      option.RSM_DIST.comment = Maximal distance a ray of light can travel after one bounce. higher values can make up for a more realistic result, but will also induce a lot more light leaks. High number  of samples is also advised when increasing the distance
+
+  option.TEMPORAL_LIGHT_ACCUMULATION = Temporally accumulated lighting
+    option.TEMPORAL_LIGHT_ACCUMULATION.comment = Blending of lighting effects over a few frames to reduce noise (can produce some ghosting or smearing)
+
+  option.OREN_NAYAR_DIFFUSE = Oren-Nayar diffuse lighting
+    option.OREN_NAYAR_DIFFUSE.comment = PBR diffuse lighting that takes surface roughness into account. If disabled, the Lambertian model is used instead.
+
+
+screen.WATER = Water options
+
+
+screen.SKY = Skybox parameters
+
+
+screen.SURFACE = PBR options and texture format
+
+
+screen.VOLUMES = Volumetric effects
+
+
+screen.POST = Post processing
+
+
+
+
+screen.BUGGED = Experimental stuff

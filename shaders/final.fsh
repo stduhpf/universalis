@@ -35,7 +35,7 @@ const int colortex2Format = RGBA16;
 #define EXPOSURE_MULTIPLIER 2.5 //[1. 2. 2.5 3. 3.5 4 4.5  5. 6. 7.5 10.]
 #define SATURATION 1.1 //[0. .1 .2 .3 .4 .5 .6 .7 .8 .9 1. 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9]
 #define CONTRAST 1. //[.1 .2 .3 .4 .5 .6 .7 .8 .9 1. 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.]
-#define None 0
+#define none 0
 #define Hable 1
 #define ACES 2
 #define Linear 0
@@ -48,9 +48,9 @@ const int colortex2Format = RGBA16;
 
 #define BLOOM
 
-#define tonemap Hable //[Hable ACES None]
+#define TONEMAP Hable //[Hable ACES none]
 
-#if (tonemap == Hable)
+#if (TONEMAP == Hable)
 const float A = 0.8; //shoulder strength
 const float B = 0.30;   //linear strength
 const float C = 0.10;   //linear angle
@@ -66,7 +66,7 @@ vec3 Tonemap(vec3 x)
     return x*norm;
 }
 #else
-#if (tonemap == ACES)
+#if (TONEMAP == ACES)
 const float A = 2.51;   //shoulder strength
 const float B = 0.03;   //linear strength
 const float C = 2.43;   //linear angle
@@ -108,7 +108,7 @@ vec3 grading(vec3 x){
 }
 
 #define sharpening .5 //[0. .25 .5 .75 1. 1.25 1.5 1.75 2. 2.25 2.5 2.75 3. 3.25 3.5 3.75 4. 4.25 4.5 4.75 5.]
-#define BLOOM_strength 1. //[0. .25 .5 .75 1. 1.25 1.5 1.75 2. 2.25 2.5 2.75 3. 3.25 3.5 3.75 4. 4.25 4.5 4.75 5.]
+#define BLOOM_STRENGTH 1. //[0. .25 .5 .75 1. 1.25 1.5 1.75 2. 2.25 2.5 2.75 3. 3.25 3.5 3.75 4. 4.25 4.5 4.75 5.]
 
 vec3 sharptex(sampler2D s, vec2 tc){
   vec2 r = 1./resolution;
@@ -132,13 +132,13 @@ vec3 applyLUT(vec3 c,int id){
 void main(){
   #ifdef BLOOM
   vec3 bloom = kawazePass(colortex1,tc/bloomscale,6.,resolution);
-  gl_FragColor.rgb = 2.*(sharptex(colortex0,tc).rgb+BLOOM_strength*bloom);
+  gl_FragColor.rgb = 2.*(sharptex(colortex0,tc).rgb+BLOOM_STRENGTH*bloom);
   #else
   gl_FragColor.rgb = 2.*(sharptex(colortex0,tc).rgb);
   #endif
   gl_FragColor.rgb = grading(gl_FragColor.rgb);
 
-  #if (tonemap!=None)
+  #if (TONEMAP!=none)
   gl_FragColor.rgb = Tonemap(gl_FragColor.rgb);
   #endif
   #ifdef LUT
