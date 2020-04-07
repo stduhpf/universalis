@@ -90,16 +90,63 @@ screen.WATER = Water options
     option.WATER_ABSORB.comment = Darkening of underwater shadows dependant on depth
   option.WATER_VOL_STEPS = Volumetric water marching steps
 
-  option.PILLAR_WATER = Fake voxel water (Experimental)
+  option.PILLAR_WATER = Fake voxel water(Experimental)
 
 
 screen.SKY = Skybox parameters
   option.SUN_BRIGHNESS = Sun brightness
   option.MOON_BRIGHNESS = Moon brightness
 
+  screen.CLOUDS = Clouds
+    option.CLOUD_RAYTRACING_QUALITY = Marching steps
+    option.CLOUD_DETAILS = Noise details
+    option.CLOUD_LIGHTING_QUALITY = Light scattering steps
+    option.CLOUD_LIGHTING_DETAILS = Light scaterring noise details
+    option.CLOUD_SHADOW_QUALITY = Cloud shadows quality
+    option.CLOUD_VL_QUALITY = Volumetric cloud shadows quality
+    option.CLOUD_REF_FILTER = Cloud reflections samples
+      option.CLOUD_REF_FILTER.comment = More samples makes rough reflection smoother, but at a significant performance cost
+    option.CLOUD_SCALE = Size of clouds
 
 screen.SURFACE = PBR options and texture format
+  screen.REFLECTIONS = Reflections
+    screen.REFLECTIONS.comment = Affects the reflections on glass and water, but also on reflective blocks depending on the ressource pack, if PBR is enabled
+    option.SSR = Screen space reflection (SSR)
+      option.SSR.comment = Uses on screen data to approximate reflections. if something is not on screen it wont be reflected
+    option.SHADOW_SPACE_REFLECTION = Shadow space reflection (ShSR)
+      option.SHADOW_SPACE_REFLECTION.comment = Uses data from the shadowmap to get reflections of surfaces visble by the sun. Ii is used as a fallback in case the SSR didn't find anything to reflect.(disabled when inside)
+    option.SSR_STEPS = SSR raymarching steps
+      option.SSR_STEPS.comment = more steps = more precise reflections, but also less FPS
+    option.SHSR_STEPS = ShSR raymarching steps
+      option.SHSR_STEPS.comment = more steps = increased reflection distance, but also less FPS
+    option.SSR_FILTER = Reflection samples
+      option.SSR_FILTER.comment = More samples makes rough reflection smoother, but at a significant performance cost
+    option.SSR_MIN_PREC = SSR max step length
+      option.SSR_MIN_PREC.comment = low values makes for more accurate reflections, but objects further parat wont reflect each other. Only usefull with a low amount of steps since with a lot of steps, their lenght decreases
+    option.SHSR_PREC = ShSR step length
+      option.SHSR_PREC.comment = Changes the length of each marching step of the ShSR. You can decrease it to have more precision, or increase it to cover more distance.
+    option.SSR_REJECTION = Backface rejection
+      option.SSR_REJECTION.comment = When enabled, only the surfaces facing the camera are reflected by SSR
+    option.SHSR_PREC_BIAS = ShSR step length bias
+      option.SHSR_PREC_BIAS.comment = How much the step length increases with distance. Allows for reflection to cover more distance while still be precise enough near the reflective surface.
 
+    screen.NORMALS_PARALLAX = Normal mapping and displacement
+      option.NORMAL_MAPPING = Normal mapping
+      option.NORMAL_MAPPING.comment = Normal mapping is used to add detail to the geometry of a texture by faking modifications to the orientation of a surface. Reuires a compatible ressource pack
+      screen.PARALLAX = Parallax displacement
+        screen.PARALLAX.comment = Uses a techenique called Parallax (occlusion) mapping, often called POM
+        option.POM = Parallax Mapping(POM)
+        option.POM_DEPTH = POM depth
+          option.POM_DEPTH.comment = Maximum depth (in block) of the POM effect. The best value might depend on the specific ressource pack, but the labPBR standard advise a depth of 0.25
+        option.POM_STEPS = POM steps
+          option.POM_STEPS.comment = POM uses some kind of raymarching to work. Increasing the amount of marching steps increases the precision of the effect, but can also make up for a significant performance hit.
+        option.PARALLAX_ALTER_DEPTHMAP = Overwrite depthmap
+          option.PARALLAX_ALTER_DEPTHMAP.comment = Overwriting the depthmap allows the POM effect to affect other effects like shadows, DOF, fog, SSAO, etc, by faking an actual change of the geometry of the surface. The performance impact is measurable, so you can disable it if you don't want it.
+      option.SELF_SHADOW = Parallax shadowing
+        option.SELF_SHADOW.comment = the texture can cast shadows to itself using a techenique simmillar to POM. The quality of this effect is controlled by the "POM steps" options
+      option.RSM_NORMAL_MAPPING = Shadowmap normal maps
+        option.RSM_NORMAL_MAPPING.comment = Draws the normalmaps to the shadowmap, allowing some slightly better quality in the GI and ShSR, but the performance hit makes it not worth it
+      
 
 screen.VOLUMES = Volumetric effects
 
