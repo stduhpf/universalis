@@ -107,13 +107,13 @@ vec3 grading(vec3 x){
   return x;
 }
 
-#define sharpening .5 //[0. .25 .5 .75 1. 1.25 1.5 1.75 2. 2.25 2.5 2.75 3. 3.25 3.5 3.75 4. 4.25 4.5 4.75 5.]
+#define SHARPENING .5 //[0. .25 .5 .75 1. 1.25 1.5 1.75 2. 2.25 2.5 2.75 3. 3.25 3.5 3.75 4. 4.25 4.5 4.75 5.]
 #define BLOOM_STRENGTH 1. //[0. .25 .5 .75 1. 1.25 1.5 1.75 2. 2.25 2.5 2.75 3. 3.25 3.5 3.75 4. 4.25 4.5 4.75 5.]
 
 vec3 sharptex(sampler2D s, vec2 tc){
   vec2 r = 1./resolution;
-  float sh = sharpening*.25;
-  return texture2D(s,tc).rgb*(1.+sharpening)-
+  float sh = SHARPENING*.25;
+  return texture2D(s,tc).rgb*(1.+SHARPENING)-
   texture2D(s,tc+r*vec2(1,0)).rgb*sh-
   texture2D(s,tc+r*vec2(0,1)).rgb*sh-
   texture2D(s,tc+r*vec2(0,-1)).rgb*sh-

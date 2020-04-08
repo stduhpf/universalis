@@ -146,14 +146,54 @@ screen.SURFACE = PBR options and texture format
         option.SELF_SHADOW.comment = the texture can cast shadows to itself using a techenique simmillar to POM. The quality of this effect is controlled by the "POM steps" options
       option.RSM_NORMAL_MAPPING = Shadowmap normal maps
         option.RSM_NORMAL_MAPPING.comment = Draws the normalmaps to the shadowmap, allowing some slightly better quality in the GI and ShSR, but the performance hit makes it not worth it
-      
+
+    screen.REFRACTIONS = Refractions
+      screen.REFRACTIONS.comment = Affect transparent objects
+      option.FAKE_REFRACTION = Fake refraction
+        option.FAKE_REFRACTION.comment = Refraction has to be faked because raytraced refraction can cause issues with some part of the image missing
+      option.REFRACT_ALL_TRANSPARENTS = Refraction on transparents
+        option.REFRACT_ALL_TRANSPARENTS.comment = Allows glass, slime, etc to refract light based on their normal map. if the normal is flat, the refraction wont work.
+
+    screen.RESSOUCE_PACK_FORMAT = Ressource pack formatting
+        option.PBR_FORMAT = PBR format
+          value.PBR_FORMAT.labPBRv1_1 = labPBR v 1.1
+          value.PBR_FORMAT.labPBRv1_2 = labPBR v 1.2
+        option.EMMISIVE_MAP = Enable emissive
+          option.EMMISIVE_MAP.comment = Some ressource packs can have undetermined stuff in the channel used for emissive, so disable it in this case.
+        option.USE_METALS = Enable metallic reflection
+          option.USE_METALS.comment = Some ressource pack don't have a maximum value for f0, so things get incoreccly flagged as metallic.
+        option.FORCE_SSS = Force subsurface scattering
+          option.FORCE_SSS.comment = Enables a hardcoded SSS map for leaves and grass. Some ressource packs have more detailed SSS maps for leaves and grass, so disabel it in those cases.
+
 
 screen.VOLUMES = Volumetric effects
+  option.VOLUMETRIC_LIGHT = Volumetric fog and light
+    option.VOLUMETRIC_LIGHT.comment = The godrays are part of the fog, you can't have the effects separated
+option.VOL_STEPS = Volumetric fog marching steps
+option.FOG_DETAIL = Fog details
+option.VOLUME_PCSS = Volumetric penumbra
+  option.VOLUME_PCSS.comment = Apply PCSS (variable penumbra) to volumetric shadows, can look cool but is kinda overkill. Big performance impact
 
 
 screen.POST = Post processing
-
-
-
+  option.SHARPENING = Image sharpening
+  option.SATURATION = Saturation
+  option.CONTRAST = Contrast
+  option.LUT = LookUp Table (LUT)
+    option.LUT.comment = Map each color to another one, using the texture stored /shaders/img/.png. There are 10 different tables borrowed (with permission) from ruthern's raspberry shaders, you can cycle through them with the LUT table option. If you want to add your own, you'll have either to change the code, or to use the exact same format.
+  option.LUT_TABLE = LUT table
+    value.LUT_TABLE.0 = Pinky
+    value.LUT_TABLE.1 = Cold
+    value.LUT_TABLE.2 = tab2
+    value.LUT_TABLE.3 = Contrast 1
+    value.LUT_TABLE.4 = Contrast 2
+    value.LUT_TABLE.5 = Contrast 3
+    value.LUT_TABLE.6 = Autumn
+    value.LUT_TABLE.7 = BlackShadow
+    value.LUT_TABLE.8 = Aged 1
+    value.LUT_TABLE.9 = Aged 2
+  option.LUT_SPACE = Lut colorspace
+    option.LUT_SPACE.comment = Changes the way the LUT is applied depending on the format used(if you don't change the Luts.png texture, leave it).
+  option.TAA_STRENGTH = TAA Blending
 
 screen.BUGGED = Experimental stuff
