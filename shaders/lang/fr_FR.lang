@@ -1,0 +1,199 @@
+screen.CAMERA = Proprietés de la caméra
+  screen.DOF = Profondeur de champ (DOF)
+    option.BETTER_DOF = Reestimation du rayon
+      option.BETTER_DOF.comment = Prends en compte les pixels voisins pour réestimer le rayon du flou. La perte de performance est légere, mais certais echantillons sont ignorés, ce qui peut reduire la qualité visuelle.
+    option.TEMPORAL_DOF = Offest variable
+    option.DOF_IT = Echantillons
+      option.DOF_IT.comment = Plus d'echantillons font un Bokeh plus lisse, mais causent une chute de performance.
+    option.DOF_APERTURE = Rayon de l'ouverture
+      option.DOF_APERTURE.comment = Affecte uniquement la profondeur de champ, pas l'exposition
+    option.DOF_FOCAL = Distance focale
+      option.DOF_FOCAL.comment = N'affecte pas le FOV, mais permet de modifier le rendu la profondeur de champ.
+    option.DOF_CLOSEST = Mise au point minimale
+      option.DOF_CLOSEST.comment = Permet de dire jusqu'a quelle distance (relative) de la distance focale on peut faire la mise au point.
+    option.ANISOTROPIC_DOF = Effet de deformation
+      option.ANISOTROPIC_DOF.comment = Deforme la forme du bokeh près des bords de l'image
+    option.ANISOTROPIC_DOF_DEFORMATION = Intensite de deformation
+
+  option.TONEMAP = Tonemap
+
+  option.BLOOM = Flou lumineux
+    option.BLOOM.comment = Fait apparaitre un halo lumineux autour des objets brillants.
+  option.BLOOM_STRENGTH = Intensite du Flou lumineux
+
+  option.AUTO_EXPOSURE = Exposition automatique
+    option.AUTO_EXPOSURE.comment = Ajuste la luminosité de l'image
+  option.EXPOSURE_SPEED = Reactivité de l'exposition
+    option.EXPOSURTE_SPEED.comment = Contrôle a quelle vitesse l'exposition s'ajuste.
+  option.EXPOSURE_MULTIPLIER = Luminosité voulue
+    option.EXPOSURE_MULTIPLIER.comment = A quel point l'image finale sera brillante. Peut aussi servir d'exposition manuelle si l'exposition auto est desactivée.
+  option.MAX_EXPOSURE = Luminosité minimale
+    option.MAX_EXPOSURE.comment = Luminosité minimale a laquelle l'exposition auto peut s'adapter.
+
+
+screen.LIGHING = Lumière
+  screen.SHADOWS = Ombres
+    option.PCSS = Penombre : PCSS
+      option.PCSS.comment ="" Percentage Closer Soft Shadows" est une techniqyue pour avoir une penombre variable crédible.
+    option.PCSS_STRENGTH = Rayon apparent du soleil
+      option.PCSS_STRENGTH.comment = Ne change pas le rayon du soleil a l'ecran, mais a quel point il affecte la taille de lma penombre.
+    option.PCSS_SAMPLES = Echantillons
+      option.PCSS_SAMPLES.comment = Plus d'echantillons pour une penombre de meilleure qualité, mais avec un cout en performance.
+    option.PCSS_ACCURACY = Taille du noyeau de PCSS
+      option.PCSS_ACCURACY.comment = De plus  hautes valeurs permettent plus de precison, mais le coup en performance est quadratique.
+    option.SHADOW_BIAS = Biais de deformation des ombres
+      option.SHADOW_BIAS.comment = Plus le bias a une valeur faible, plus les ombres vont etre precises pres du joueur, mais moins elles le seront a grande distance.
+    option.shadowMapResolution = Resolution des ombres
+    option.shadowDistance = Distance de rendu des ombres
+      option.shadowDistance.comment = L'effet est a peu pres simillaire a celui du bias.
+
+  screen.AMBIENT = Occlusion ambiante (AO)
+    screen.AMBIENT.comment = L'immumination globale n'etant pas parfaite, une lumiere ambiante (avec occlusion) est utillisée pour simuler la lumiere du ciel et des reflections diffuse de grand ordre.
+    option.AMBIENT_OCCLUSION = SSAO
+      option.AMBIENT_OCCLUSION.comment = Screen Space Ambient Occlusion. Ce thereme designe les techniques qui utillisent les informations a l'ecran pour approximer l'occlusion ambiente. La technique utiollisee ici est plus precisement une version modifiee de l'"Alchemy SSAO"
+    option.AO_SAMPLES = Echantillons
+      option.AO_SAMPLES.comment = Plus d'echantillons pour une occluision plus lisse.
+    option.AO_RADIUS = Rayon
+      option.AO_RADIUS.comment = A quelle distance les objets peuvent affecter la lumiere ambiente.
+
+  screen.GI = Illumination globale
+    option.GLOBAL_ILLUMINATION = Illumination globale (RSM)
+      option.GLOBAL_ILLUMINATION.comment = Une approximation de l'illumination globale a un rebond utlillisant la technique appelée: Reflective Shadow Map. Le principal probleme de cette technique est que la lumiere reflechie put parfois passer a travers certains murs.
+    option.GI_SAMPLES = Echantillons
+      option.GI_SAMPLES.comment = Plus d'echantillons pur une illumination globale meilleure, mais avec un cout non negligeable en perrformance.
+    option.GI_HQ_FILTER = Filtre spatial haute qualité
+      option.GI_HQ_FILTER.comment = eut aider a reduire le bruit de l'image mais avec un cout en performace non, negligeable. Augmenter le nombre d'echantillons est souvent preferable dans un premier temps
+    option.GI_DITHER_SCALE = Echelle de resolution du tramage
+      option.GI_DITHER_SCALE.comment = Une valeur plus haute peut augmenter les IPS, mais risque d'augmenter significativement le bruit de l'image.
+    option.RSM_DIST = Distance de l'illumination
+      option.RSM_DIST.comment = Distance maximale que peut traverser un rayon de lumiere apres un rebond. Une plus grande valeur pour cette option peut permettre un rendu plus realiste, mais augmente aussi le nombre de "fuites" de lumiere. De plus une distance plus grande necessite ausi d'augmenter le nombre d'echantillons
+
+  option.TEMPORAL_LIGHT_ACCUMULATION = Accumulation temporelle de la lumiere
+    option.TEMPORAL_LIGHT_ACCUMULATION.comment = Utillise les informations de l'image precedente pour reduire le bruit produit par les effets tels que l'illumination globale et l'occlusion ambiente. Peut provoquer des effets de ghosting.
+
+  option.OREN_NAYAR_DIFFUSE = Modele Oren-Nayar diffus
+    option.OREN_NAYAR_DIFFUSE.comment = Permet de prendre en compte la rugosite des surface pour l'eclairage diffus. Si cette option est desactivee, le modele de Lambert est utillisé par defaut.
+
+
+screen.WATER = Options de l'eau
+  option.WATER_TEXTURE = Texture de l'eau
+  option.WATER_PARALLAX = Parallaxe des vagues
+    option.WATER_PARALLAX.comment = effet pseudo-3D pour les vagues
+  option.WATER_PARALLAX_PRECISION = Erreur de la parallaxe
+    option.WATER_PARALLAX_PRECISION.comment = Plus cette valeur est faible, plus l'effet 3D sera de bonne qualité
+  option.WATER_HEIGHT = Hauteur des vagues
+  option.WAVE_NOISE_OCTAVES = Details des vagues
+
+  option.VOLUMETRIC_WATER = Dispersion de l'eau
+  option.WATER_THICCNESS = Intensite de la dispersion
+  option.WATER_ABSORB = Attenuation de la lumiere
+    option.WATER_ABSORB.comment = Effet de l'epaisseur de l'eau sur l'intensite de la lumiere
+  option.WATER_VOL_STEPS = Pas d'integration de l'eau.
+
+  option.PILLAR_WATER = Eau en pillier(Experimentale)
+
+
+screen.SKY = Parametres du ciel
+  option.SUN_BRIGHNESS = Luminosite du soleil
+  option.MOON_BRIGHNESS = Luminosié de la lune
+
+  screen.CLOUDS = Nuages
+    option.CLOUD_RAYTRACING_QUALITY = Pas d'integration
+    option.CLOUD_DETAILS = Details des nuages
+    option.CLOUD_LIGHTING_QUALITY = Pas d'integration eclairement
+    option.CLOUD_LIGHTING_DETAILS = Details de l'eclairement
+    option.CLOUD_SHADOW_QUALITY = Qualite des ombres des nuages
+    option.CLOUD_VL_QUALITY = Qualite des ombres volumetriques des nuages
+    option.CLOUD_REF_FILTER = Echantillons de reflection des nuges
+      option.CLOUD_REF_FILTER.comment = Plus d'echantilons rendent les reflections sur les surfaces rugueuse plus convaincantes, mais les performances sont rapidement degradées
+    option.CLOUD_SCALE = Taille des nuages
+
+screen.SURFACE = option PBR et format des textures
+  screen.REFLECTIONS = Reflections
+    screen.REFLECTIONS.comment = Reflections sur l'eau et le verre, mais aussi sur les blocs reflechissants selon le pack de texture dans le cas ou le PBR est activé
+    option.SSR = Screen space reflections (SSR)
+      option.SSR.comment = Utillise les informations a l'ecran pour approximer les reflections. Toute surface qui n'est pas visible a l'ecran ne sera pas reflechie
+    option.SHADOW_SPACE_REFLECTION = Shadow space reflection (ShSR)
+      option.SHADOW_SPACE_REFLECTION.comment = Utillise les informations de la shadowmap pour avoir des reflets des surfaces visibles par le soleil. Utillise au cas ou les SSR n'ont pas trouve de reflection. (Desactivé quand le joueur est dans un grotte ou sous un toit)
+    option.SSR_STEPS = Pas de tracage SSR
+      option.SSR_STEPS.comment = plus de pas = reflections plus precises, mais aussi moins d'IPS
+    option.SHSR_STEPS =  Pas de tracage ShSR
+      option.SHSR_STEPS.comment = plus de pas = reflections plus lointaines, mais aussi moins d'IPS
+    option.SSR_FILTER = Echantillons de reflection
+      option.SSR_FILTER.comment = Plus d'echantilons rendent les reflections sur les surfaces rugueuse plus convaincantes, mais les performances sont rapidement degradées
+    option.SSR_MIN_PREC = Longeur de pas maximale pour SSR
+      option.SSR_MIN_PREC.comment = une valeur faible pour des reflections de meilleure qualite, mais les objets plus loin les un des autres ne pourraient plus se reflechir entre eux. Surtout effectif avec peu de pas
+    option.SHSR_PREC =  Longeur de pas ShSR
+      option.SHSR_PREC.comment = Changela longeur des pas de tracage pour les ShSR. Reduire cette valeur augmente la precision, mais diminue la distance d'affichage des reflets, l'augmenter a l'effet inverse.
+    option.SSR_REJECTION = Rejet des faces arrieres
+      option.SSR_REJECTION.comment = Quand activé, suelent les surfaces qui sont tounées vers la camera sont reflechies par les SSR
+    option.SHSR_PREC_BIAS = Biais de longeur de pas ShSR
+      option.SHSR_PREC_BIAS.comment = De combien la longeur de pas est augmentée avec la distance. Permet d'avoir plus de precision pres de la surface que au loin.
+
+    screen.NORMALS_PARALLAX = Normal mapping et parallaxe
+      option.NORMAL_MAPPING = Normal mapping
+      option.NORMAL_MAPPING.comment = Le normal mapping sert a donner un faux effet de profondeur en faisant comme si l'orientation de certaines parte de la surface etait modifiee. Necessite un ressource pack compatible
+      screen.PARALLAX = Effet de parallaxe
+        screen.PARALLAX.comment = Utliilse une techenique appelée Parallax (occlusion) mapping, ou POM, pour donner uin effet 3D aux texture.
+        option.POM = Parallax Mapping(POM)
+        option.POM_DEPTH = Profondeur du POM
+          option.POM_DEPTH.comment = profondeur maximale (en blocs) de l'effet POM.La valeur necessaire depend du ressource pack, mais le standart labPBR demande une profondeur de 0.25
+        option.POM_STEPS = Pas de POM
+          option.POM_STEPS.comment = Le POM utillise une sorte de raymarching. Augmenter le nombre de pas augmente la precision de l'effet, mais a aussi un impact sur les performances.
+        option.PARALLAX_ALTER_DEPTHMAP = Modification de profondeur
+          option.PARALLAX_ALTER_DEPTHMAP.comment = Modifier la profondeur permet au POM d'affecter d'autres effets tels que les ombres, la profondeur de champ, le brouillard, l'occlusion ambient, etc, en falsifiant une modification de la géometrie. Cela peut avoir un certain impact sur les performances, donc on peut le desactiver.
+      option.SELF_SHADOW = Obres de parallaxe
+        option.SELF_SHADOW.comment = Les textures peuvent se prjeter des ombres su elles-memes avec un effet simmilaire au POM. La qualite de cet effet est controlee par l'option "Pas de POM"
+      option.RSM_NORMAL_MAPPING = Shadowmap normal maps
+        option.RSM_NORMAL_MAPPING.comment = Utillise les normal maps pour la shadowmap, pour avoir une qualite legerment meilleur pour l'illumination globale et les ShSR. L'imapct de performances faible associé a la très faible amelioration de qualité rend cet effet peu interresant.
+
+    screen.REFRACTIONS = Refractions
+      screen.REFRACTIONS.comment = Affecte l'eau et les objets transparents
+      option.FAKE_REFRACTION = Fausse refraction
+        option.FAKE_REFRACTION.comment = L'effet de refraction n'est pas correct, car on doit utilliser uniquement les informations presentes a l'ecran.
+      option.REFRACT_ALL_TRANSPARENTS = Refraction des blocs transparents
+        option.REFRACT_ALL_TRANSPARENTS.comment = Permet a tous les blocks transparents de refracter la lumiere selon leur normal map.
+
+    screen.RESSOUCE_PACK_FORMAT = Formattage des ressources
+        option.PBR_FORMAT = format PBR
+          value.PBR_FORMAT.labPBRv1_1 = labPBR v 1.1
+          value.PBR_FORMAT.labPBRv1_2 = labPBR v 1.2
+        option.EMMISIVE_MAP = Activer emission
+          option.EMMISIVE_MAP.comment = Certains pacs de texture ont des donnes innatendues dans le canal reserve a l'emission, desactivez cette option si c'est le cas du votre.
+        option.USE_METALS = Activer les reflections metalliques
+          option.USE_METALS.comment = Certains ressource packs n'utillise pas de reflections metalliques, dans ce cas avoir cette option activee peut avoir des effets innatendus
+        option.FORCE_SSS = Forcer le subsurface scattering
+          option.FORCE_SSS.comment = Active le SSS pour les feuillages et les hautes herbes . Certains ressurce packs ont des information splus detaillées sur comment les SSS fonctionnent sur ces blocks, desactivez cette option dans ce cas.
+
+
+screen.VOLUMES = Effets volumetriques
+  option.VOLUMETRIC_LIGHT = Lumiere et brouillard volumetriques
+    option.VOLUMETRIC_LIGHT.comment = La lumiere volumetrique fait partie du brouillard, on ne peut les avoir separement.
+option.VOL_STEPS = Pas d'integration du brouillard
+option.FOG_DETAIL = Details du brouiilard
+option.VOLUME_PCSS = Penombre volumetrique
+  option.VOLUME_PCSS.comment = Applique le PCSS (penombre vraiable) aux ombres volumetriques, c'est un peu overkill
+
+
+screen.POST = Post processing
+  option.SHARPENING = Affutage de l'image
+  option.SATURATION = Saturation
+  option.CONTRAST = Contraste
+  option.LUT = LookUp Table (LUT)
+    option.LUT.comment = Convertit chaque couleur en une autre,en utillisant la texture /shaders/img/Luts.png. Il y a 10 tables que j'ai recupéré (avec permission) des raspberry shaders de Rutherin, on peut changer de tabke avec l'option "LUT table".
+  option.LUT_TABLE = LUT table
+    value.LUT_TABLE.0 = Rosée
+    value.LUT_TABLE.1 = Froid
+    value.LUT_TABLE.2 = Chaud
+    value.LUT_TABLE.3 = Contraste 1
+    value.LUT_TABLE.4 = Contraste 2
+    value.LUT_TABLE.5 = Contraste 3
+    value.LUT_TABLE.6 = Automne
+    value.LUT_TABLE.7 = Ombres Noires
+    value.LUT_TABLE.8 = Vieilli 1
+    value.LUT_TABLE.9 = Vieilli 2
+  option.LUT_SPACE = Lut colorspace
+    option.LUT_SPACE.comment = Change la maniere avec laquelle la LUT est appliquee selon le format utillisé.(en utillisant le Luts.png par defaut, ne pas le changer).
+  option.TAA_STRENGTH = TAA Blending
+
+screen.BUGGED = Trucs experimentaux
