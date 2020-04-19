@@ -200,6 +200,9 @@ void main()
   #else
   vec4 PBRdata = vec4(0);
   #endif
+	#if PBR_FORMAT == labPBRv1_3
+  PBRdata.g = sqrt(PBRdata.g);
+  #endif
 	float porosity = PBRdata.b<.251?PBRdata.b*4.:0.;
 	PBRdata.b=saturate((PBRdata.b-.25)/.75);
 	#ifdef FORCE_SSS

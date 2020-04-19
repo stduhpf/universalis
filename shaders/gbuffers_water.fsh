@@ -294,8 +294,11 @@ void main()
 		n = iswater?tnb*raymarche(vec3(position.xz,0.),normalize(vpos)*tbn):n;
 		#endif
 		gl_FragData[2]=vec4(normalize(n)*.25+.5,1.);
-
+		#if PBR_FORMAT == labPBRv1_3
+		gl_FragData[3]=vec4(.9,.366,0.,1.);
+		#else
 		gl_FragData[3]=vec4(.9,.134,0.,1.);
+		#endif
   }else{
 		vec2 uv = texcoord.st;
 
@@ -306,6 +309,9 @@ void main()
 		vec4 PBRdata =gettex(specular,uv);
 		#else
 		vec4 PBRdata = vec4(0);
+		#endif
+		#if PBR_FORMAT == labPBRv1_3
+		PBRdata.g = sqrt(PBRdata.g);
 		#endif
 		gl_FragData[0]=gettex(texture,uv);
 		gl_FragData[0].rgb= srgbToLinear(gl_FragData[0].rgb*tintColor.rgb)*.5;//*0.+blocklightdir;

@@ -30,6 +30,9 @@ void main()
   #else
   vec4 PBRdata = vec4(0);
   #endif
+  #if PBR_FORMAT == labPBRv1_3
+  PBRdata.g = sqrt(PBRdata.g);
+  #endif
   gl_FragData[0]=texture2D(texture,texcoord.st)*tintColor;
   gl_FragData[0].rgb= srgbToLinear(gl_FragData[0].rgb);
 //  gl_FragData[0].rgb=PBRdata.rgb;

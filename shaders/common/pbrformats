@@ -1,4 +1,5 @@
 #define OFF 0
 #define labPBRv1_1 1
 #define labPBRv1_2 2
-#define PBR_FORMAT OFF //[OFF labPBRv1_1 labPBRv1_2]
+#define labPBRv1_3 3
+#define PBR_FORMAT OFF //[OFF labPBRv1_1 labPBRv1_2 labPBRv1_3]

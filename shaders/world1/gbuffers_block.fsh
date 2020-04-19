@@ -65,6 +65,9 @@ void main()
   #else
   vec4 PBRdata = vec4(0);
   #endif
+	#if PBR_FORMAT == labPBRv1_3
+	PBRdata.g = sqrt(PBRdata.g);
+	#endif
 
   gl_FragData[0]=gettex(texture,uv)*tintColor;
   gl_FragData[0].rgb= srgbToLinear(gl_FragData[0].rgb);//*step(abs(texres.x-texres.y),.0001);//*0.+blocklightdir;

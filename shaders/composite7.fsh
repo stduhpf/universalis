@@ -10,7 +10,7 @@ uniform float centerDepthSmooth;
 
 //#define DOF
 #define BETTER_DOF
-//#define TEMPORAL_DOF //increases the demporal resolution of DOF, but loks jittery
+//#define TEMPORAL_DOF //increases the demporal resolution of DOF, but looks jittery
 
 #ifdef TEMPORAL_DOF
 uniform float frameTimeCounter;
