@@ -158,6 +158,7 @@ screen.SURFACE = option PBR et format des textures
         option.PBR_FORMAT = format PBR
           value.PBR_FORMAT.labPBRv1_1 = labPBR v 1.1
           value.PBR_FORMAT.labPBRv1_2 = labPBR v 1.2
+          value.PBR_FORMAT.labPBRv1_3 = labPBR v 1.3
         option.EMMISIVE_MAP = Activer emission
           option.EMMISIVE_MAP.comment = Certains pacs de texture ont des donnes innatendues dans le canal reserve a l'emission, desactivez cette option si c'est le cas du votre.
         option.USE_METALS = Activer les reflections metalliques
