@@ -98,7 +98,7 @@ vec3 clip2screen(vec3 clippos){       //this one works with previous frames
 #define cam2screen(campos)      clip2screen(cam2clip(campos))
 #define world2clip(worldpos)    view2clip(world2view(worldpos))
 
-#define world2screen(worldpos)  view2screen(world2view(screenpos))
+#define world2screen(worldpos)  view2screen(world2view(worldpos))
 
 
 //forward previous frame
