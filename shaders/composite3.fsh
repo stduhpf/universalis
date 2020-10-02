@@ -118,7 +118,7 @@ vec3 ssr(vec3 p,vec3 rd,vec3 n,int count,float sh, float rough, float fresnel,fl
  bool nohit = true;
  if(fresnel-.5*rough>.01){
    #ifdef SSR
-    vec3 d = normalize(view2screen(screen2view(p)+rd)-p);
+    vec3 d = (view2screen(screen2view(p)+rd)-p);
     float iter = float(ITER+1);
     vec3 toBord = (step(0,d)-p)/(d*iter); //distances to borders divided by the number of steps
     float limstep =max(min(1./iter,SSR_MIN_PREC),min(min(toBord.x,toBord.y),toBord.z));
