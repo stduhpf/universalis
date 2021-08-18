@@ -190,9 +190,8 @@ void main() {
     puddle = smoothstep(.1, .8, puddle);
   }
   gl_FragData[0] = gettex(texture, uv) * tintColor;
-  gl_FragData[0].rgb = srgbToLinear(
-      gl_FragData[0]
-          .rgb); //*step(abs(texres.x-texres.y),.0001);//*0.+blocklightdir;
+  gl_FragData[0].rgb = srgbToLinear(gl_FragData[0].rgb);
+  //*step(abs(texres.x-texres.y),.0001);//*0.+blocklightdir;
 
   gl_FragData[0].rgb *= (1. - porosity * wet * .82 + .05 * puddle * puddle);
   float roug = mix(PBRdata.r, 1., puddle * puddle * puddle * puddle);
