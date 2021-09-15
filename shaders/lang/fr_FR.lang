@@ -1,6 +1,6 @@
 screen.CAMERA = Proprietés de la caméra
   screen.DOF = Profondeur de champ (DOF)
-    option.BETTER_DOF = Reestimation du rayon
+    option.BETTER_DOF = Réestimation du rayon
       option.BETTER_DOF.comment = Prends en compte les pixels voisins pour réestimer le rayon du flou. La perte de performance est légere, mais certais echantillons sont ignorés, ce qui peut reduire la qualité visuelle.
     option.TEMPORAL_DOF = Offest variable
     option.DOF_IT = Echantillons
@@ -12,7 +12,7 @@ screen.CAMERA = Proprietés de la caméra
     option.DOF_CLOSEST = Mise au point minimale
       option.DOF_CLOSEST.comment = Permet de dire jusqu'a quelle distance (relative) de la distance focale on peut faire la mise au point.
     option.ANISOTROPIC_DOF = Effet de deformation
-      option.ANISOTROPIC_DOF.comment = Deforme la forme du bokeh près des bords de l'image
+      option.ANISOTROPIC_DOF.comment = Déforme la forme du bokeh près des bords de l'image
     option.ANISOTROPIC_DOF_DEFORMATION = Intensite de deformation
 
   option.TONEMAP = Tonemap
