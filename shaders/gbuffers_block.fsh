@@ -30,6 +30,8 @@ uniform sampler2D noisetex;
 #include "/lib/essentials.glsl"
 #include "/lib/trans.glsl"
 
+uniform float alphaTestRef;
+
 in vec3 normal;
 in vec4 texcoord;
 in vec4 tintColor;
@@ -196,6 +198,9 @@ void main() {
     puddle = smoothstep(.1, .8, puddle);
   }
   fragData0 = gettex(texture, uv) * tintColor;
+  if (fragData0.a < alphaTestRef)
+    discard;
+
   fragData0.rgb = srgbToLinear(
       fragData0.rgb); //*step(abs(texres.x-texres.y),.0001);//*0.+blocklightdir;
 
